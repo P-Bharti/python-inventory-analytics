@@ -40,29 +40,22 @@ pip3 install mysql-connector-python
 
 2. [Install MySQL](https://dev.mysql.com/downloads/)
 
-3. <details> <summary> Create Inventory and Orders Table </summary>
-      <details> <summary> Via Spreadsheet </summary>
-        <p>This is what the Inventory Table should look like </p>
-         <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
-         <br>
-        ![Example Table for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_spreadsheet.png)
-        <p>This is what the Orders Table should look like </p>
-         <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
-        <br>
-        ![Example Table for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_example_spreadsheet.png)
-    </details>  
-  
-    <details> <summary> Via CSV </summary>
-        <p>This is what the Inventory File should look like </p>
-         <i>⚠️ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS</i>
-         <br>
-        ![Example File for inventory]((https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_csv.png))
-        <p>This is what the Orders File should look like </p>
-         <i>⚠️ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS</i>
-        <br>
-        ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_screenshot_csv.png)
-    </details>
-  </details>
+3. Create Inventory and Orders Table
+      * Via Spreadsheet <br></br>
+      This is what the Inventory Table should look like 
+      <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
+      ![Example Table for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_spreadsheet.png)
+      This is what the Orders Table should look like 
+      <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
+      ![Example Table for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_example_spreadsheet.png)
+      * Via CSV
+      <br></br>
+      This is what the Inventory File should look like 
+      ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
+      ![Example File for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_csv.png)
+      This is what the Orders File should look like 
+      ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
+      ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_screenshot_csv.png)
 
 4. <details> <summary> Export As CSV </summary>
       <details> <summary> From Spreadsheet </summary>
