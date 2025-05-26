@@ -45,11 +45,11 @@ pip3 install mysql-connector-python
         <p>This is what the Inventory Table should look like </p>
          <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
          <br>
-        ![Example Table for inventory](https://github.com/user-attachments/assets/b3e597e2-bedd-462b-8862-c55f5aadcf51)
+        ![Example Table for inventory](/screenshots/inventory_example_spreadsheet.png)
         <p>This is what the Orders Table should look like </p>
          <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
         <br>
-        ![Example Table for Orders](https://github.com/user-attachments/assets/5344be90-97ff-4142-8e22-fb244056f475)
+        ![Example Table for Orders](/screenshots/orders_example_spreadsheet.png)
     </details>  
   
     <details> <summary> Via CSV </summary>
