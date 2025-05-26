@@ -45,22 +45,22 @@ pip3 install mysql-connector-python
         <p>This is what the Inventory Table should look like </p>
          <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
          <br>
-        ![Example Table for inventory](/screenshots/inventory_example_spreadsheet.png)
+        ![Example Table for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_spreadsheet.png)
         <p>This is what the Orders Table should look like </p>
          <i>⚠️ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
         <br>
-        ![Example Table for Orders](/screenshots/orders_example_spreadsheet.png)
+        ![Example Table for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_example_spreadsheet.png)
     </details>  
   
     <details> <summary> Via CSV </summary>
         <p>This is what the Inventory File should look like </p>
          <i>⚠️ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS</i>
          <br>
-        ![image](https://github.com/user-attachments/assets/80364fc8-bfb5-4ec6-9f1a-bad18f1cc443)
+        ![Example File for inventory]((https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_csv.png))
         <p>This is what the Orders File should look like </p>
          <i>⚠️ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS</i>
         <br>
-        ![image](https://github.com/user-attachments/assets/36d0cad5-ba0e-452a-b5cb-94a3c6072f5d)
+        ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_screenshot_csv.png)
     </details>
   </details>
 
