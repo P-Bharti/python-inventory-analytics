@@ -57,15 +57,12 @@ pip3 install mysql-connector-python
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_screenshot_csv.png)
 
-4. <details> <summary> Export As CSV </summary>
-      <details> <summary> From Spreadsheet </summary>
-        <b>(Images in WIP)</b>
-    </details>  
-  
-    <details> <summary> From CSV </summary>
-        Already in CSV format
-    </details>
-  </details>
+4. Export As CSV
+     * From Spreadsheet
+     <br></br>
+     ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/export_as_csv_example.png)
+    * From CSV <br></br>
+      Already in CSV format
 
 5. <details> <summary> Set <inventory_table>.csv as inventory path in Home-View </summary>
       <b>(Image in WIP)</b>
