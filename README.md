@@ -44,45 +44,45 @@ pip3 install mysql-connector-python
       * Via Spreadsheet <br></br>
       This is what the Inventory Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
-      ![Example Table for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_spreadsheet.png)
+      ![Example Table for inventory](screenshots/inventory_example_spreadsheet.png)
       This is what the Orders Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
-      ![Example Table for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_example_spreadsheet.png)
+      ![Example Table for orders](screenshots/order_example_spreadsheet.png)
       * Via CSV
       <br></br>
       This is what the Inventory File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
-      ![Example File for inventory](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/inventory_example_csv.png)
+      ![Example File for inventory](screenshots/inventory_example_csv.png)
       This is what the Orders File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
-      ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/order_screenshot_csv.png)
+      ![Example File for orders](screenshots/order_example_csv.png)
 
 4. Export As CSV
      * From Spreadsheet
      <br></br>
-     ![Example File for orders](https://github.com/P-Bharti/python-inventory-analytics/blob/main/screenshots/export_as_csv_example.png)
+     ![Example File for orders](screenshots/export_as_csv_example.png)
     * From CSV <br></br>
       Already in CSV format
 
-5. <details> <summary> Set <inventory_table>.csv as inventory path in Home-View </summary>
-      <b>(Image in WIP)</b>
-   </details>
+5. Run main.py and enter basic details
+      <br></br>
+      ![basic details example](screenshots/basic_details_example.png)
 
-6. <details> <summary> Set <orders_table>.csv as orders path in Home-View </summary>
-      <b>(Image in WIP)</b>
-   </details>
+6. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
+      ![path exapample (pt-1) screenshot](screenshots/enter_path_pt-1.png)
+      ![path exapample (pt-2) screenshot](screenshots/enter_path_pt-2.png)
    
-7. <details> <summary> Press Import Database Button </summary>
-      <b>(Image in WIP)</b>
-   </details>
+7. Press Import Database Button  
+      ![Image showcasing Import Database Button](screenshots/import_database_image.png)
 
-8. <details> <summary> Press Refresh Button </summary>
-      <b>(Image in WIP)</b>
-   </details>
+8. Press Refresh Button  
+      ![Image showcasing Refresh Database Button](screenshots/refresh_database_image.png)
+     
 
-9. <details> <summary> Click Modelling View Button to switch to Modelling-View  </summary>
-      <b>(Image in WIP)</b>
-   </details>
+9. Click Modelling View Button to switch to Modelling-View   
+      ![Image showcasing Modelling View Button](screenshots/switch_to_modelling_view_image.png)
+     
+     
 
 ## How to Run
 
@@ -100,7 +100,11 @@ This project is currently a Work in Progress.
 
 ## Contributions
 
-Contributions are closed as of this time. 
+Applicaions for new Contributors are closed as of this time.
+<br></br>
+Current Contributors:
+- Pranav Bharti
+- Mantra Asthana
 
 ## License
 
