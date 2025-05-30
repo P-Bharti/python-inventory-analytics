@@ -1,6 +1,6 @@
 # Requires MqSQL connector
 import mysql.connector as conn
-import program_code.setup as setup
+import setup as setup
 import sys # to exit the program
 
 conn_obj = "" # this is used to create the connection to mysql via enter_mysql()

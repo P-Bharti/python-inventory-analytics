@@ -5,7 +5,7 @@ from numpy import genfromtxt
 from ttkbootstrap import Style
  # DEBUG remove Frame later V
 from ttkbootstrap.widgets import Button, Treeview, Frame
-import program_code.database_handler as database_handler
+import database_handler as database_handler
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import io
