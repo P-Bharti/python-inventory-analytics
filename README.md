@@ -22,6 +22,11 @@ An easy-to-use inventory visualisation software with a stylish dashboard for cri
 
 All libraries are installable via pip3:
 
+* matplotlib: for plotting of input data
+```
+pip3 install matplotlib
+```
+
 * numpy: for numerical operations and lightweight data analysis
 ```
 pip3 install numpy
