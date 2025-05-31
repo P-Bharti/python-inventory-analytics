@@ -46,44 +46,57 @@ pip3 install mysql-connector-python
 2. [Install MySQL](https://dev.mysql.com/downloads/)
 
 3. Create Inventory and Orders Table
-      * Via Spreadsheet\
+      * Via Spreadsheet
+      ##
       This is what the Inventory Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for inventory](screenshots/inventory_example_spreadsheet.png)
       This is what the Orders Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for orders](screenshots/order_example_spreadsheet.png)
-      * Via CSV\
+      ##
+      * Via CSV
+      ##
       This is what the Inventory File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for inventory](screenshots/inventory_example_csv.png)
       This is what the Orders File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for orders](screenshots/order_example_csv.png)
-
-4. Export As CSV
-     * From Spreadsheet\
+      ##
+      
+5. Export As CSV
+     * From Spreadsheet
+     ##
      ![Example File for orders](screenshots/export_as_csv_example.png)
-    * From CSV\
-      Already in CSV format
-
-5. Run main.py and enter basic details\
+     ##
+    * From CSV
+     ##
+     Already in CSV format
+     ##
+7. Run main.py and enter basic details
+      ##
       ![basic details example](screenshots/basic_details_example.png)
+      ##
 
-6. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
+8. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
+      ##
       ![path exapample (pt-1) screenshot](screenshots/enter_path_pt-1.png)
       ![path exapample (pt-2) screenshot](screenshots/enter_path_pt-2.png)
-   
-7. Press Import Database Button  
+      ##
+9. Press Import Database Button  
+      ##
       ![Image showcasing Import Database Button](screenshots/import_database_image.png)
-
-8. Press Refresh Button  
+      ##
+10. Press Refresh Button  
+      ##
       ![Image showcasing Refresh Database Button](screenshots/refresh_database_image.png)
-     
+      ##
 
-9. Click Modelling View Button to switch to Modelling-View   
+11. Click Modelling View Button to switch to Modelling-View   
+      ##
       ![Image showcasing Modelling View Button](screenshots/switch_to_modelling_view_image.png)
-     
+      ##
      
 
 ## How to Run
