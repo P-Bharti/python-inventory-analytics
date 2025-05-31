@@ -46,15 +46,14 @@ pip3 install mysql-connector-python
 2. [Install MySQL](https://dev.mysql.com/downloads/)
 
 3. Create Inventory and Orders Table
-      * Via Spreadsheet <br></br>
+      * Via Spreadsheet\
       This is what the Inventory Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for inventory](screenshots/inventory_example_spreadsheet.png)
       This is what the Orders Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for orders](screenshots/order_example_spreadsheet.png)
-      * Via CSV
-      <br></br>
+      * Via CSV\
       This is what the Inventory File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for inventory](screenshots/inventory_example_csv.png)
@@ -63,14 +62,12 @@ pip3 install mysql-connector-python
       ![Example File for orders](screenshots/order_example_csv.png)
 
 4. Export As CSV
-     * From Spreadsheet
-     <br></br>
+     * From Spreadsheet\
      ![Example File for orders](screenshots/export_as_csv_example.png)
-    * From CSV <br></br>
+    * From CSV\
       Already in CSV format
 
-5. Run main.py and enter basic details
-      <br></br>
+5. Run main.py and enter basic details\
       ![basic details example](screenshots/basic_details_example.png)
 
 6. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
