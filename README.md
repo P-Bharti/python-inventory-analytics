@@ -47,56 +47,47 @@ pip3 install mysql-connector-python
 
 3. Create Inventory and Orders Table
       * Via Spreadsheet
-      ##
+      <br></br>
       This is what the Inventory Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for inventory](screenshots/inventory_example_spreadsheet.png)
       This is what the Orders Table should look like 
       <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
       ![Example Table for orders](screenshots/order_example_spreadsheet.png)
-      ##
       * Via CSV
-      ##
+      <br></br>
       This is what the Inventory File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for inventory](screenshots/inventory_example_csv.png)
       This is what the Orders File should look like 
       ⚠ ONLY FIRST LINE MUST BE EXACTLY THE SAME IN YOURS
       ![Example File for orders](screenshots/order_example_csv.png)
-      ##
       
 4. Export As CSV
      * From Spreadsheet
-     ##
+     <br></br>
      ![Example File for orders](screenshots/export_as_csv_example.png)
-     ##
     * From CSV
-     ##
+     <br></br>
      Already in CSV format
-     ##
 5. Run main.py and enter basic details
-      ##
+      <br></br>
       ![basic details example](screenshots/basic_details_example.png)
-      ##
 
 6. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
-      ##
+      <br></br>
       ![path exapample (pt-1) screenshot](screenshots/enter_path_pt-1.png)
       ![path exapample (pt-2) screenshot](screenshots/enter_path_pt-2.png)
-      ##
 7. Press Import Database Button  
-      ##
+      <br></br>
       ![Image showcasing Import Database Button](screenshots/import_database_image.png)
-      ##
 8. Press Refresh Button  
-      ##
+      <br></br>
       ![Image showcasing Refresh Database Button](screenshots/refresh_database_image.png)
-      ##
 
 9. Click Modelling View Button to switch to Modelling-View   
-      ##
+      <br></br>
       ![Image showcasing Modelling View Button](screenshots/switch_to_modelling_view_image.png)
-      ##
      
 
 ## How to Run
