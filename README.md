@@ -65,7 +65,7 @@ pip3 install mysql-connector-python
       ![Example File for orders](screenshots/order_example_csv.png)
       ##
       
-5. Export As CSV
+4. Export As CSV
      * From Spreadsheet
      ##
      ![Example File for orders](screenshots/export_as_csv_example.png)
@@ -74,26 +74,26 @@ pip3 install mysql-connector-python
      ##
      Already in CSV format
      ##
-7. Run main.py and enter basic details
+5. Run main.py and enter basic details
       ##
       ![basic details example](screenshots/basic_details_example.png)
       ##
 
-8. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
+6. Set <inventory_table>.csv and <orders_table>.csv as path in Home-View
       ##
       ![path exapample (pt-1) screenshot](screenshots/enter_path_pt-1.png)
       ![path exapample (pt-2) screenshot](screenshots/enter_path_pt-2.png)
       ##
-9. Press Import Database Button  
+7. Press Import Database Button  
       ##
       ![Image showcasing Import Database Button](screenshots/import_database_image.png)
       ##
-10. Press Refresh Button  
+8. Press Refresh Button  
       ##
       ![Image showcasing Refresh Database Button](screenshots/refresh_database_image.png)
       ##
 
-11. Click Modelling View Button to switch to Modelling-View   
+9. Click Modelling View Button to switch to Modelling-View   
       ##
       ![Image showcasing Modelling View Button](screenshots/switch_to_modelling_view_image.png)
       ##
@@ -120,10 +120,11 @@ This project is currently a Work in Progress.
 ## Contributions
 
 Applicaions for new Contributors are closed as of this time.
-<br></br>
+##
 Current Contributors:
 - Pranav Bharti
 - Mantra Asthana
+##
 
 ## License
 
