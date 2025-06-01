@@ -96,7 +96,6 @@ def retrieve_via_sql_query(sql_select, sql_from, sql_where = "",sql_database = "
 
     return(data)
 
-def save_plot_data(plot_data,plot_type):
 
     # plot types denotes which table it will save in (example: name_cost_plots) whereas the plot_data is the plot's png from BYTESIO
     command = "INSERT INTO " + plot_type + " (plot_data)\nVALUES (%s);"

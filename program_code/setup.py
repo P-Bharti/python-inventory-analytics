@@ -62,18 +62,3 @@ def initialise_tables(cursor):
                  ("Potato","2025-04-08",139.00,10.00,5.00,122.55,1,"W.E. Noe","1777888999");
                  """) # Debug
   cursor.execute('commit')
-
-  # second database only to hold saved images of plots
-  cursor.execute("CREATE DATABASE IF NOT EXISTS plot_database")
-
-  cursor.execute("USE plot_database")
-
-  cursor.execute("DROP TABLE IF EXISTS plot_database.name_cost_plots;") # Handles setup being run more than once
-  cursor.execute("""CREATE TABLE plot_database.name_cost_plots
-                  (
-                      plot_id int(10) not null AUTO_INCREMENT,
-                      plot_data blob not null,
-                      PRIMARY KEY (plot_id)
-                  );""")
-
-  # CC add more plots as tables

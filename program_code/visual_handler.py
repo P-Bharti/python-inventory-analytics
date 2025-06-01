@@ -166,7 +166,6 @@ def run_GUI():
 
   def refresh():
     populate_data()
-    draw_name_cost_plot()
 
   def switch_to_modelling_view():
     modelling_view.tkraise()
@@ -321,42 +320,6 @@ def run_GUI():
   def switch_to_order_models_view():
     order_models_view.tkraise()
 
-  def draw_name_cost_plot(save_plot = False):
-      inventory_data = database_handler.retrieve_via_sql_query("item_name,item_cost", "inventory")
-      item_name_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
-      item_cost_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
-
-      fig, ax = plt.subplots(figsize=(4, 3))
-      ax.plot(item_name_list, item_cost_list, marker='x')
-      ax.set_title("Item vs Cost")
-
-      # CC see if we can implement V (clutters the view at the moment)
-      # ax.set_xlabel("Item Name")
-      # ax.set_ylabel("Item Cost")
-      # fig.autofmt_xdate()
-
-      canvas = FigureCanvasTkAgg(fig, master = inventory_models_view)
-      canvas.get_tk_widget().grid(row = 0,
-                                 column = 0,
-                                 padx = 5,
-                                 pady = 7,
-                                 sticky = "nsew"
-                                 )
-      canvas.draw()
-
-      # CC in db_hander add this as a function in another table and make allow comparing possible
-
-      # data_pairs = list(zip(item_cost_list, item_name_list))
-      if save_plot == True:
-        img_buffer = io.BytesIO()
-        fig.savefig(img_buffer, format='png')
-        img_buffer.seek(0) # resetting the pointer to the start of the byte stream again so that we can recall the data later
-
-        database_handler.save_plot_data(img_buffer.getvalue(),"name_cost_plots")
-
-  def save_plot():
-    draw_name_cost_plot(True) # refreshs the plot and saves it
-
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
   title_row.columnconfigure(0, weight = 1) # centering
@@ -403,7 +366,7 @@ def run_GUI():
                    )
 
   # padx = (10,0) pads only on left side
-  inventory_models_view = tk.Frame(modelling_view)
+  inventory_models_view = Frame(modelling_view, bootstyle = "warning") # DEBUG Frame instead of tk.frame
   inventory_models_view.grid(row = 1,
                              columnspan = 2,
                              padx = (10,0),
@@ -418,24 +381,12 @@ def run_GUI():
                          sticky = "nsew"
                          )
 
+  debug_label1 = tk.Label(inventory_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Inventory View Placeholder░░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
+  debug_label1.grid(row = 0) # DEBUG
   debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder░░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
   debug_label2.grid(row = 0) # DEBUG
 
   inventory_models_view.tkraise()
-
-  # inventory viewer
-  draw_name_cost_plot()
-
-  # CC add functionallity later
-  save_plot_button = tk.Button(inventory_models_view,
-                               text = "▰▱▰▱▰▰▱▰ \n 🗎 Save Plot \n ▰▱▰▱▰▰▱▰",
-                               command = save_plot)
-  save_plot_button.grid(row = 0,
-                        column = 1,
-                        padx = 5)
-
-
-
 
   # Sets initial frame to be home_view
   home_view.tkraise()
