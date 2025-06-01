@@ -49,10 +49,10 @@ pip3 install mysql-connector-python
       * Via Spreadsheet
       <br></br>
       This is what the Inventory Table should look like 
-      <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
+      ⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS
       ![Example Table for inventory](screenshots/inventory_example_spreadsheet.png)
       This is what the Orders Table should look like 
-      <i>⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS</i>
+      ⚠ ONLY FIRST ROW MUST BE EXACTLY THE SAME IN YOURS
       ![Example Table for orders](screenshots/order_example_spreadsheet.png)
       * Via CSV
       <br></br>
