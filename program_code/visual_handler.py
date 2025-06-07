@@ -320,17 +320,110 @@ def run_GUI():
   def switch_to_order_models_view():
     order_models_view.tkraise()
 
+  def draw_plot():
+      inventory_data = database_handler.retrieve_via_sql_query("item_name,item_cost", "inventory")
+      item_name_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
+      item_cost_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
+
+      plt.plot(item_name_list, item_cost_list, marker = 'x')
+      plt.title("Item vs Cost")
+      plt.xlabel("Item Name")
+      plt.ylabel("Item Cost")
+      plt.show()
+
+  def set_x_axis():
+    # retriving the column list
+    # CC make the information common in all three functions into one
+    table_information = database_handler.retrieve_columns("inventory")
+    column_list = []
+    for i in range(0,len(table_information)):
+      column_list.append(table_information[i][0])
+
+    # finding current index
+    current_column = x_axis_column_name.get()
+    try:
+      current_column_index = column_list.index(current_column)
+    except:
+      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+      current_column_index = -1
+
+    #in case at the last column
+    if current_column_index + 1 == len(column_list):
+      current_column_index = -1
+
+    x_axis_column_name.set(column_list[current_column_index + 1])
+
+    #formating the text
+    if len(x_axis_column_name.get()) < 25:
+      x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get())
+    else:
+      x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get()[0:22] + "...")
+
+  def set_y_axis():
+    # retriving the column list
+    table_information = database_handler.retrieve_columns("inventory")
+    column_list = []
+    for i in range(0,len(table_information)):
+      column_list.append(table_information[i][0])
+
+    # finding current index
+    current_column = y_axis_column_name.get()
+    try:
+      current_column_index = column_list.index(current_column)
+    except:
+      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+      current_column_index = -1
+
+    #in case at the last column
+    if current_column_index + 1 == len(column_list):
+      current_column_index = -1
+
+    y_axis_column_name.set(column_list[current_column_index + 1])
+
+    #formating the text
+    if len(y_axis_column_name.get()) < 25:
+      y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get())
+    else:
+      y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get()[0:22] + "...")
+
+  def set_z_axis():
+    # retriving the column list
+    table_information = database_handler.retrieve_columns("inventory")
+    column_list = []
+    for i in range(0,len(table_information)):
+      column_list.append(table_information[i][0])
+
+    # finding current index
+    current_column = z_axis_column_name.get()
+    try:
+      current_column_index = column_list.index(current_column)
+    except:
+      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+      current_column_index = -1
+
+    #in case at the last column
+    if current_column_index + 1 == len(column_list):
+      current_column_index = -1
+
+    z_axis_column_name.set(column_list[current_column_index + 1])
+
+    #formating the text
+    if len(z_axis_column_name.get()) < 25:
+      z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
+    else:
+      z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
+
+
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
   title_row.columnconfigure(0, weight = 1) # centering
   title_row.columnconfigure(1, weight = 0)
   title_row.columnconfigure(2, weight = 1)
-
-
   title_row.grid(row = 0,
                  columnspan = 3,
                  sticky = "nsew"
                  )
+
 
   inventory_view_button = Button(title_row,
                                  text = "Inventory",
@@ -350,6 +443,7 @@ def run_GUI():
                         column = 1
                         )
 
+
   title_label = tk.Label(title_row, text = "       ▭▭▪▣▓ ▒ ░ Modelling View ░ ▒ ▓▣▪▭▭       ", relief = "ridge", font = "TkFixedFont")
   title_label.grid(row = 0,
                    column = 2
@@ -366,7 +460,7 @@ def run_GUI():
                    )
 
   # padx = (10,0) pads only on left side
-  inventory_models_view = Frame(modelling_view, bootstyle = "warning") # DEBUG Frame instead of tk.frame
+  inventory_models_view = tk.Frame(modelling_view)
   inventory_models_view.grid(row = 1,
                              columnspan = 2,
                              padx = (10,0),
@@ -381,10 +475,63 @@ def run_GUI():
                          sticky = "nsew"
                          )
 
-  debug_label1 = tk.Label(inventory_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Inventory View Placeholder░░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
-  debug_label1.grid(row = 0) # DEBUG
-  debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder░░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
+  debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder ░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
   debug_label2.grid(row = 0) # DEBUG
+
+  graph_plotter_label = tk.Label(inventory_models_view, text = " ▪▣▓ ▒ ░ Graph Plotter ░ ▒ ▓▣▪ ", relief = "ridge")
+  graph_plotter_label.grid(row = 0,
+                           column = 0
+                           )
+
+  x_axis = tk.StringVar()
+  x_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  set_x_axis_button = tk.Button(inventory_models_view,
+                                 textvariable = x_axis,
+                                 command = set_x_axis
+                                 )
+  set_x_axis_button.grid(row = 1,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  x_axis.set("Set Graph's X-Axis:\n...")
+
+  y_axis = tk.StringVar()
+  y_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  set_y_axis_button = tk.Button(inventory_models_view,
+                                 textvariable = y_axis,
+                                 command = set_y_axis
+                                 )
+  set_y_axis_button.grid(row = 2,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  y_axis.set("Set Graph's Y-Axis:\n...")
+
+  z_axis = tk.StringVar()
+  z_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  set_z_axis_button = tk.Button(inventory_models_view,
+                                 textvariable = z_axis,
+                                 command = set_z_axis
+                                 )
+  set_z_axis_button.grid(row = 3,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  z_axis.set("Set Graph's Z-Axis:\n...")
+
+  # graph_launch_button = Button(inventory_models_view,
+  #                                text = "▰▱▰▱▰▰▱▰ \n 📊 Graph \n Item vs Cost \n ▰▱▰▱▰▰▱▰",
+  #                                command = draw_plot,
+  #                                bootstyle = "primary"
+  #                                )
+  # graph_launch_button.grid(row = 0,
+  #                               padx = 5,
+  #                               pady = 5,
+  #                               sticky = "nsew"
+  #                               )
 
   inventory_models_view.tkraise()
 
