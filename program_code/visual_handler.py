@@ -322,7 +322,7 @@ def run_GUI():
   def close_plot():
     plt.close()
 
-  def draw_plot(graph_type = "scatter_plot"):
+  def draw_plot():
     #first, remove existing plot
     close_plot()
 
@@ -376,11 +376,10 @@ def run_GUI():
 
       ax = plt.axes(projection='3d')
 
-      if graph_type == "scatter_plot":
+      if plot_type.get()[17:] == "Scatter":
         ax.scatter(x_plot_data, y_plot_data, z_plot_data, c= range(len(z_axis_list)), cmap='plasma', marker='x') # colours reqiure numeric data always
-      if graph_type == "line_graph":
+      if plot_type.get()[17:] == "Line":
         ax.plot3D(x_plot_data, y_plot_data, z_plot_data)
-
       # replacing the pseudo-numbers (for string data) in the above statement by actual data if present (required to avoid datatype issues)
       if x_axis_type_string == True:
         ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
@@ -398,8 +397,16 @@ def run_GUI():
 
       plt.show()
 
-  def draw_line_plot():
-    draw_plot("line_graph")
+  def toggle_plot_type():
+    plot_type_list = ["Scatter","Line"]
+    current_index = plot_type_list.index(plot_type.get()[17:])
+
+    # CC clean up logic below V
+    if current_index == len(plot_type_list) - 1:
+      current_index = -1
+    current_index += 1
+
+    plot_type.set("📈 3D Graph type: " + plot_type_list[current_index])
 
   def set_x_axis():
     # retriving the column list
@@ -485,7 +492,6 @@ def run_GUI():
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
     else:
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
-
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
   title_row.columnconfigure(0, weight = 1) # centering
@@ -625,14 +631,16 @@ def run_GUI():
                           pady = 5
                           )
 
-  line_plot_button = tk.Button(inventory_models_view,
-                                 text = "📈 Plot 3D Line Graph",
-                                 command = draw_line_plot
+  plot_type = tk.StringVar()
+  plot_type_button = tk.Button(inventory_models_view,
+                                 textvariable = plot_type,
+                                 command = toggle_plot_type
                                  )
-  line_plot_button.grid(row = 5,
+  plot_type_button.grid(row = 5,
                         column = 0,
                         sticky = "nsew"
                         )
+  plot_type.set("📈 3D Graph type: Scatter")
 
 
   inventory_models_view.tkraise()
