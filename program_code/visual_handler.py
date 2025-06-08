@@ -351,17 +351,45 @@ def run_GUI():
       y_axis_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
       z_axis_list = [inventory_data[i][2] for i in range(0,len(inventory_data))]
 
+      # checking if type is string as need to treat them diffenently in plot
+      x_axis_type_string = False
+      y_axis_type_string = False
+      z_axis_type_string = False
+
+      if isinstance(x_axis_list[0], str) == True:
+        x_axis_type_string = True
+        x_plot_data = range(len(x_axis_list))
+      else:
+        x_plot_data = x_axis_list
+
+      if isinstance(y_axis_list[0], str) == True:
+        y_axis_type_string = True
+        y_plot_data = range(len(y_axis_list))
+      else:
+        y_plot_data = y_axis_list
+
+      if isinstance(z_axis_list[0], str) == True:
+        z_axis_type_string = True
+        z_plot_data = range(len(z_axis_list))
+      else:
+        z_plot_data = z_axis_list
+
       ax = plt.axes(projection='3d')
 
       if graph_type == "scatter_plot":
-        ax.scatter(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)), c= range(len(z_axis_list)), cmap='plasma', marker='x')
+        ax.scatter(x_plot_data, y_plot_data, z_plot_data, c= range(len(z_axis_list)), cmap='plasma', marker='x') # colours reqiure numeric data always
       if graph_type == "line_graph":
-        ax.plot3D(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)))
+        ax.plot3D(x_plot_data, y_plot_data, z_plot_data)
 
-      # replacing the pseudo-numbers in the above statement by actual data if present (required to avoid datatype issues)
-      ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
-      ax.set(yticks=range(len(y_axis_list)), yticklabels=y_axis_list)
-      ax.set(zticks=range(len(z_axis_list)), zticklabels=z_axis_list)
+      # replacing the pseudo-numbers (for string data) in the above statement by actual data if present (required to avoid datatype issues)
+      if x_axis_type_string == True:
+        ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
+
+      if y_axis_type_string == True:
+        ax.set(yticks=range(len(y_axis_list)), yticklabels=y_axis_list)
+
+      if z_axis_type_string == True:
+        ax.set(zticks=range(len(z_axis_list)), zticklabels=z_axis_list)
 
       ax.set_title(x_axis + " vs " + y_axis + " vs " + z_axis)
       ax.set_xlabel(x_axis, labelpad=20)
