@@ -309,7 +309,6 @@ def run_GUI():
 
   populate_data()
 
-
   # functions for modelling view GUI
   def switch_to_home_view():
     home_view.tkraise()
@@ -321,15 +320,46 @@ def run_GUI():
     order_models_view.tkraise()
 
   def draw_plot():
-      inventory_data = database_handler.retrieve_via_sql_query("item_name,item_cost", "inventory")
-      item_name_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
-      item_cost_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
+    x_axis = x_axis_column_name.get()
+    y_axis = y_axis_column_name.get()
+    z_axis = z_axis_column_name.get()
 
-      plt.plot(item_name_list, item_cost_list, marker = 'x')
-      plt.title("Item vs Cost")
-      plt.xlabel("Item Name")
-      plt.ylabel("Item Cost")
+    # CC add error msgs everywhere in code
+    # without z-axis
+    if x_axis != "unspecified" and y_axis != "unspecified" and z_axis == "unspecified":
+      inventory_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis), "inventory")
+      x_axis_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
+      y_axis_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
+
+      ax = plt.axes()
+      ax.plot(x_axis_list, y_axis_list, marker = 'x')
+      ax.set_title(x_axis + " vs " + y_axis)
+      ax.set_xlabel(x_axis)
+      ax.set_ylabel(y_axis)
+
       plt.show()
+    # with z-axis
+    elif x_axis != "unspecified" and y_axis != "unspecified" and z_axis != "unspecified":
+      inventory_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis + "," + z_axis), "inventory")
+      x_axis_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
+      y_axis_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
+      z_axis_list = [inventory_data[i][2] for i in range(0,len(inventory_data))]
+
+      ax = plt.axes(projection='3d')
+      # CC decide between the two plotting methods
+      ax.scatter(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)), c= range(len(z_axis_list)), cmap='plasma', marker='x')
+      # replacing the pseudo-numbers in the above statement by actual data if present (required to avoid datatype issues)
+      ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list,
+            yticks=range(len(y_axis_list)), yticklabels=y_axis_list,
+            zticks=range(len(z_axis_list)), zticklabels=z_axis_list
+            )
+      ax.set_title(x_axis + " vs " + y_axis + " vs " + z_axis)
+      ax.set_xlabel(x_axis, labelpad=20)
+      ax.set_ylabel(y_axis, labelpad=20)
+      ax.set_zlabel(z_axis, labelpad=20)
+
+      plt.show()
+
 
   def set_x_axis():
     # retriving the column list
@@ -393,6 +423,9 @@ def run_GUI():
     for i in range(0,len(table_information)):
       column_list.append(table_information[i][0])
 
+    #as 3d plotting is optional,
+    column_list.append("unspecified")
+
     # finding current index
     current_column = z_axis_column_name.get()
     try:
@@ -412,7 +445,6 @@ def run_GUI():
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
     else:
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
-
 
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
@@ -494,7 +526,8 @@ def run_GUI():
                         pady = 2,
                         sticky = "nsew"
                         )
-  x_axis.set("Set Graph's X-Axis:\n...")
+  x_axis_column_name.set("unspecified")
+  x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get())
 
   y_axis = tk.StringVar()
   y_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
@@ -507,7 +540,8 @@ def run_GUI():
                         pady = 2,
                         sticky = "nsew"
                         )
-  y_axis.set("Set Graph's Y-Axis:\n...")
+  y_axis_column_name.set("unspecified")
+  y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get())
 
   z_axis = tk.StringVar()
   z_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
@@ -520,18 +554,19 @@ def run_GUI():
                         pady = 2,
                         sticky = "nsew"
                         )
-  z_axis.set("Set Graph's Z-Axis:\n...")
+  z_axis_column_name.set("unspecified")
+  z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
 
-  # graph_launch_button = Button(inventory_models_view,
-  #                                text = "▰▱▰▱▰▰▱▰ \n 📊 Graph \n Item vs Cost \n ▰▱▰▱▰▰▱▰",
-  #                                command = draw_plot,
-  #                                bootstyle = "primary"
-  #                                )
-  # graph_launch_button.grid(row = 0,
-  #                               padx = 5,
-  #                               pady = 5,
-  #                               sticky = "nsew"
-  #                               )
+  graph_plot_button = Button(inventory_models_view,
+                                 text = "📊 Plot Graph",
+                                 command = draw_plot,
+                                 bootstyle = "warning-outline"
+                                 )
+  graph_plot_button.grid(row = 4,
+                        column = 0,
+                        padx = 5,
+                        pady = 5
+                        )
 
   inventory_models_view.tkraise()
 
