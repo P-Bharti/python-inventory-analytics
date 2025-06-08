@@ -319,7 +319,13 @@ def run_GUI():
   def switch_to_order_models_view():
     order_models_view.tkraise()
 
-  def draw_plot():
+  def close_plot():
+    plt.close()
+
+  def draw_plot(graph_type = "scatter_plot"):
+    #first, remove existing plot
+    close_plot()
+
     x_axis = x_axis_column_name.get()
     y_axis = y_axis_column_name.get()
     z_axis = z_axis_column_name.get()
@@ -346,13 +352,17 @@ def run_GUI():
       z_axis_list = [inventory_data[i][2] for i in range(0,len(inventory_data))]
 
       ax = plt.axes(projection='3d')
-      # CC decide between the two plotting methods
-      ax.scatter(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)), c= range(len(z_axis_list)), cmap='plasma', marker='x')
+
+      if graph_type == "scatter_plot":
+        ax.scatter(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)), c= range(len(z_axis_list)), cmap='plasma', marker='x')
+      if graph_type == "line_graph":
+        ax.plot3D(range(len(x_axis_list)), range(len(y_axis_list)), range(len(z_axis_list)))
+
       # replacing the pseudo-numbers in the above statement by actual data if present (required to avoid datatype issues)
-      ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list,
-            yticks=range(len(y_axis_list)), yticklabels=y_axis_list,
-            zticks=range(len(z_axis_list)), zticklabels=z_axis_list
-            )
+      ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
+      ax.set(yticks=range(len(y_axis_list)), yticklabels=y_axis_list)
+      ax.set(zticks=range(len(z_axis_list)), zticklabels=z_axis_list)
+
       ax.set_title(x_axis + " vs " + y_axis + " vs " + z_axis)
       ax.set_xlabel(x_axis, labelpad=20)
       ax.set_ylabel(y_axis, labelpad=20)
@@ -360,6 +370,8 @@ def run_GUI():
 
       plt.show()
 
+  def draw_line_plot():
+    draw_plot("line_graph")
 
   def set_x_axis():
     # retriving the column list
@@ -557,16 +569,43 @@ def run_GUI():
   z_axis_column_name.set("unspecified")
   z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
 
-  graph_plot_button = Button(inventory_models_view,
+  plot_button_frame = tk.Frame(inventory_models_view)
+  plot_button_frame.grid(row = 4,
+                            column = 0,
+                            sticky = "nsew"
+                            )
+
+  scatter_plot_button = Button(plot_button_frame,
                                  text = "📊 Plot Graph",
                                  command = draw_plot,
                                  bootstyle = "warning-outline"
                                  )
-  graph_plot_button.grid(row = 4,
+  scatter_plot_button.grid(row = 0,
                         column = 0,
-                        padx = 5,
+                        padx = 2,
                         pady = 5
                         )
+
+  graph_close_button = Button(plot_button_frame,
+                                 text = "Close Graph",
+                                 command = close_plot,
+                                 bootstyle = "success-outline"
+                                 )
+  graph_close_button.grid(row = 0,
+                          column = 1,
+                          padx = 2,
+                          pady = 5
+                          )
+
+  line_plot_button = tk.Button(inventory_models_view,
+                                 text = "📈 Plot 3D Line Graph",
+                                 command = draw_line_plot
+                                 )
+  line_plot_button.grid(row = 5,
+                        column = 0,
+                        sticky = "nsew"
+                        )
+
 
   inventory_models_view.tkraise()
 
