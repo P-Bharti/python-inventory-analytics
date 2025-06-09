@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import io
 import sys
+import datetime
 # fix order ^ to make more sense
 
 # CC bring back all the formatting cc's that i removed after formatting in the middle
@@ -18,7 +19,7 @@ def run_GUI():
   # all window definitions
   root = tk.Tk()
   root.title("Python Inventory Analytics")
-  root.geometry("660x365")
+  root.geometry("660x370")
   root.resizable(False, False)
   root.protocol('WM_DELETE_WINDOW', sys.exit)
 
@@ -642,6 +643,49 @@ def run_GUI():
                         )
   plot_type.set("📈 3D Graph type: Scatter")
 
+  date_frame = tk.Frame(inventory_models_view)
+  date_frame.grid(row = 6,
+                  column = 0,
+                  pady = 5,
+                  sticky = "nsew",
+                  )
+
+  current_date = datetime.date.today()
+  day_label = tk.Label(date_frame,
+                       text = str(current_date)[8:],
+                       relief = "raised",
+                       width = 8,
+                       height = 3
+                       )
+  day_label.grid(row = 0,
+                 column = 0,
+                 padx = 1,
+                 sticky = "nsew"
+                 )
+
+  month_label = tk.Label(date_frame,
+                         text = str(current_date)[5:7],
+                         relief = "raised",
+                         width = 8,
+                         height = 3
+                         )
+  month_label.grid(row = 0,
+                  column = 1,
+                  padx = 4,
+                  sticky = "nsew"
+                  )
+
+  year_label = tk.Label(date_frame,
+                        text = str(current_date)[0:4],
+                        relief = "raised",
+                        width = 8,
+                        height = 3
+                        )
+  year_label.grid(row = 0,
+                  column = 2,
+                  padx = 1,
+                  sticky = "nsew"
+                  )
 
   inventory_models_view.tkraise()
 
