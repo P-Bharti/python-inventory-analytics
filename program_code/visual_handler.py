@@ -19,7 +19,7 @@ def run_GUI():
   # all window definitions
   root = tk.Tk()
   root.title("Python Inventory Analytics")
-  root.geometry("660x370")
+  root.geometry("660x365")
   root.resizable(False, False)
   root.protocol('WM_DELETE_WINDOW', sys.exit)
 
@@ -650,14 +650,20 @@ def run_GUI():
                   sticky = "nsew",
                   )
 
+  day_month_year_label = tk.Label(date_frame, text = " Date | Month | Year ", relief = "groove") # DEBUG CC change text later
+  day_month_year_label.grid(row = 0,
+                            columnspan = 3,
+                            pady = 2,
+                            sticky = "nsew"
+                            )
+
   current_date = datetime.date.today()
   day_label = tk.Label(date_frame,
                        text = str(current_date)[8:],
                        relief = "raised",
-                       width = 8,
-                       height = 3
+                       width = 8
                        )
-  day_label.grid(row = 0,
+  day_label.grid(row = 1,
                  column = 0,
                  padx = 1,
                  sticky = "nsew"
@@ -666,10 +672,9 @@ def run_GUI():
   month_label = tk.Label(date_frame,
                          text = str(current_date)[5:7],
                          relief = "raised",
-                         width = 8,
-                         height = 3
+                         width = 8
                          )
-  month_label.grid(row = 0,
+  month_label.grid(row = 1,
                   column = 1,
                   padx = 4,
                   sticky = "nsew"
@@ -678,10 +683,9 @@ def run_GUI():
   year_label = tk.Label(date_frame,
                         text = str(current_date)[0:4],
                         relief = "raised",
-                        width = 8,
-                        height = 3
+                        width = 8
                         )
-  year_label.grid(row = 0,
+  year_label.grid(row = 1,
                   column = 2,
                   padx = 1,
                   sticky = "nsew"
