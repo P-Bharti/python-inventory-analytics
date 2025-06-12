@@ -7,8 +7,6 @@ from ttkbootstrap import Style
 from ttkbootstrap.widgets import Button, Treeview, Frame
 import database_handler as database_handler
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import io
 import sys
 import datetime
 # fix order ^ to make more sense
