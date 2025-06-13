@@ -95,7 +95,7 @@ def retrieve_via_sql_query(sql_select, sql_from, sql_where = ""):
 
     return(data)
 
-def retrieve_columns(sql_from):
+def retrieve_headers(sql_from):
     command = "DESC " + sql_from
 
     cursor = conn_obj.cursor()

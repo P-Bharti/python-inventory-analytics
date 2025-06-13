@@ -196,6 +196,7 @@ def run_GUI():
                        sticky = "nsew"
                        )
 
+  #CC rebrand modelling with analysis
   modelling_view_button = Button(first_row_frame,
                                  text = "▰▱▰▱▰▰▱▰\n 📊 Modelling \n Viewport \n ▰▱▰▱▰▰▱▰",
                                  command = switch_to_modelling_view,
@@ -410,7 +411,7 @@ def run_GUI():
   def set_x_axis():
     # retriving the column list
     # CC make the information common in all three functions into one
-    table_information = database_handler.retrieve_columns("inventory")
+    table_information = database_handler.retrieve_headers("inventory")
     column_list = []
     for i in range(0,len(table_information)):
       column_list.append(table_information[i][0])
@@ -437,7 +438,7 @@ def run_GUI():
 
   def set_y_axis():
     # retriving the column list
-    table_information = database_handler.retrieve_columns("inventory")
+    table_information = database_handler.retrieve_headers("inventory")
     column_list = []
     for i in range(0,len(table_information)):
       column_list.append(table_information[i][0])
@@ -464,7 +465,7 @@ def run_GUI():
 
   def set_z_axis():
     # retriving the column list
-    table_information = database_handler.retrieve_columns("inventory")
+    table_information = database_handler.retrieve_headers("inventory")
     column_list = []
     for i in range(0,len(table_information)):
       column_list.append(table_information[i][0])
@@ -491,6 +492,29 @@ def run_GUI():
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
     else:
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
+
+  def tabularise_full_inventory_database():
+    # temp table soln
+    headers = database_handler.retrieve_headers("inventory")
+    column_list = []
+    for i in range(0,len(headers)):
+      header_name = headers[i][0][5:]
+      if "manufacturer_" in header_name:
+        header_name = "Manf. " + header_name[13:]
+      column_list.append(header_name)
+
+    full_data = database_handler.retrieve_via_sql_query("*","inventory")
+
+    ax = plt.axes()
+    ax.axis('off') # hide axis
+    colour_list = tuple("0.8" for i in range(len(column_list)))
+    full_inventory_database_table = ax.table(cellText = full_data, colLabels = column_list, colColours = colour_list, loc = 'center')
+    full_inventory_database_table.auto_set_font_size(False)
+    full_inventory_database_table.set_fontsize(10)
+    full_inventory_database_table.scale(1.2,1)
+    plt.show()
+
+
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
   title_row.columnconfigure(0, weight = 1) # centering
@@ -554,7 +578,7 @@ def run_GUI():
 
   debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder ░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
   debug_label2.grid(row = 0) # DEBUG
-
+  # inventory plotter section
   graph_plotter_label = tk.Label(inventory_models_view, text = " ▪▣▓ ▒ ░ Graph Plotter ░ ▒ ▓▣▪ ", relief = "ridge")
   graph_plotter_label.grid(row = 0,
                            column = 0
@@ -688,6 +712,29 @@ def run_GUI():
                   padx = 1,
                   sticky = "nsew"
                   )
+
+  inventory_response_message = tk.StringVar()
+  inventory_response_message_board = tk.Label(inventory_models_view, textvariable = inventory_response_message, relief = "groove") # CC standardardise relief
+  inventory_response_message_board.grid(row = 0,
+                                        column = 1,
+                                        padx = 3,
+                                        pady = 2,
+                                        rowspan = 2,
+                                        sticky = "nsew"
+                                        )
+  inventory_response_message.set("     Action status will be displayed here:     \n\n") # CC add msgs CC make pretty?
+
+  full_inventory_database_viewer_button = Button(inventory_models_view,
+                                                 text = "Full inventory database",
+                                                 command = tabularise_full_inventory_database,
+                                                 bootstyle = "warning"
+                                                 )
+  full_inventory_database_viewer_button.grid(row = 2,
+                                             column = 1,
+                                             padx = 3,
+                                             pady = 2,
+                                             sticky = "nsew"
+                                             ) # CC standardise pady in inventory models view
 
   inventory_models_view.tkraise()
 
