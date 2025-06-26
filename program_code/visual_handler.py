@@ -76,7 +76,7 @@ def run_GUI():
    inventory_viewer.column("item_stock", anchor = "center", width = 50)
    inventory_viewer.heading('item_stock', text = 'Stock')
 
-   inventory_viewer.grid(row = 1, column = 0)
+   inventory_viewer.grid(row = 1, column = 0) # CC why is the grid being called twice?
 
    # insert values into inventory_viewer
    for i in inventory_data:
@@ -494,7 +494,13 @@ def run_GUI():
       z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
 
   def tabularise_full_inventory_database():
-    # temp table soln
+    # Create a new window
+    full_inventory_database_window = tk.Toplevel(inventory_models_view)
+    full_inventory_database_window.title("Full inventory viewer")
+    full_inventory_database_window.geometry("1610x360")
+    full_inventory_database_window.resizable(False, False)
+
+    # Get header list (CC make into a function maybe?)
     headers = database_handler.retrieve_headers("inventory")
     column_list = []
     for i in range(0,len(headers)):
@@ -505,15 +511,69 @@ def run_GUI():
 
     full_data = database_handler.retrieve_via_sql_query("*","inventory")
 
-    ax = plt.axes()
-    ax.axis('off') # hide axis
-    colour_list = tuple("0.8" for i in range(len(column_list)))
-    full_inventory_database_table = ax.table(cellText = full_data, colLabels = column_list, colColours = colour_list, loc = 'center')
-    full_inventory_database_table.auto_set_font_size(False)
-    full_inventory_database_table.set_fontsize(10)
-    full_inventory_database_table.scale(1.2,1)
-    plt.show()
+    full_inventory_database_table = Treeview(full_inventory_database_window,
+                               columns = column_list,
+                               show = 'headings',
+                               height = 17,
+                               bootstyle = 'success'
+                               )
+    full_inventory_database_table.grid(row = 0,
+                          column = 0,
+                          sticky = "nsew"
+                          )
 
+    # creating the scrollbar
+    scrollbar = ttk.Scrollbar(full_inventory_database_window, orient = "vertical", command = full_inventory_database_table.yview)
+    scrollbar.grid(row = 0,
+                   column = 1,
+                   sticky = "nsew"
+                   )
+    full_inventory_database_table.configure(yscrollcommand = scrollbar.set)
+
+    # initialising columns CC make full_inventory_database_table name shorter and other names in general too
+    for i in column_list:
+      full_inventory_database_table.column(i, anchor = "center", width = 145)
+      full_inventory_database_table.heading(i, text = i)
+
+    # insert values into full_inventory_database_window
+    for i in full_data:
+      full_inventory_database_table.insert(parent = '', index = tk.END, values = i)
+
+  def select_previous_item():
+    # retriving the column list
+    # CC make the information common V into one (also in set x axis)
+    table_information = database_handler.retrieve_headers("inventory")
+    column_list = []
+    for i in range(0,len(table_information)):
+      column_list.append(table_information[i][0])
+
+    # finding current index
+    current_column = selected_item_value.get()
+    current_column_index = column_list.index(current_column)
+
+    #in case at the first column
+    if current_column_index - 1 == -1:
+      current_column_index = len(column_list)
+
+    selected_item_value.set(column_list[current_column_index - 1])
+
+  def select_next_item():
+    # retriving the column list
+    # CC make the information common V into one (also in set x axis)
+    table_information = database_handler.retrieve_headers("inventory")
+    column_list = []
+    for i in range(0,len(table_information)):
+      column_list.append(table_information[i][0])
+
+    # finding current index
+    current_column = selected_item_value.get()
+    current_column_index = column_list.index(current_column)
+
+    #in case at the last column
+    if current_column_index + 1 == len(column_list):
+      current_column_index = -1
+
+    selected_item_value.set(column_list[current_column_index + 1])
 
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
@@ -722,12 +782,12 @@ def run_GUI():
                                         rowspan = 2,
                                         sticky = "nsew"
                                         )
-  inventory_response_message.set("     Action status will be displayed here:     \n\n") # CC add msgs CC make pretty?
+  inventory_response_message.set("       Action status will be displayed here:       \n\n") # CC add msgs CC make pretty?
 
   full_inventory_database_viewer_button = Button(inventory_models_view,
-                                                 text = "Full inventory database",
+                                                 text = "View full inventory database",
                                                  command = tabularise_full_inventory_database,
-                                                 bootstyle = "warning"
+                                                 bootstyle = "dark"
                                                  )
   full_inventory_database_viewer_button.grid(row = 2,
                                              column = 1,
@@ -735,6 +795,62 @@ def run_GUI():
                                              pady = 2,
                                              sticky = "nsew"
                                              ) # CC standardise pady in inventory models view
+
+  itemwise_statistics_frame = tk.Frame(inventory_models_view)
+  itemwise_statistics_frame.grid(row = 3,
+                                 column = 1
+                                 )
+
+  left_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove") # CC replace ▭▭ with better
+  left_spacer.grid(row = 0,
+                   column = 0,
+                   padx = 2
+                   )
+
+  itemwise_statistics_label = tk.Label(itemwise_statistics_frame,
+                                       text = "▪▣▓ Itemwise Statistics ▓▣▪",
+                                       relief = "groove"
+                                       )
+  itemwise_statistics_label.grid(row = 0,
+                                 column = 1
+                                 )
+
+  right_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove") # CC replace ▭▭ with better
+  right_spacer.grid(row = 0,
+                   column = 2,
+                   padx = 2
+                   )
+
+  previous_item_button = Button(itemwise_statistics_frame,
+                              text = "<",
+                              command = select_previous_item,
+                              bootstyle = "success"
+                              )
+  previous_item_button.grid(row = 1,
+                            column = 0,
+                            padx = 2
+                            )
+
+  selected_item_value = tk.StringVar()
+  selected_item_label = tk.Label(itemwise_statistics_frame,
+                                 textvariable = selected_item_value,
+                                 relief = "groove"
+                                 )
+  selected_item_value.set("item_id") # CC use meaningful defaults/ use unspecified
+  selected_item_label.grid(row = 1,
+                          column = 1,
+                          sticky = "nsew"
+                          )
+
+  next_item_button = Button(itemwise_statistics_frame,
+                              text = ">",
+                              command = select_next_item,
+                              bootstyle = "success"
+                              )
+  next_item_button.grid(row = 1,
+                        column = 2,
+                        padx = 2
+                        )
 
   inventory_models_view.tkraise()
 
