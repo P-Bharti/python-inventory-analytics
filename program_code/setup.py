@@ -18,19 +18,20 @@ def initialise_tables(cursor):
                       item_final_cost float(8,2) not null,
                       item_margin float(5,2) not null,
                       item_stock int(10) not null,
+                      item_restock_value int(10) not null,
                       item_manufacturer_name varchar(40) not null,
                       item_manufacturer_incharge varchar(20) not null,
                       item_manufacturer_contact_no varchar(10) not null,
                       PRIMARY KEY (item_id)
                   );""")
-  # Debug
-  cursor.execute("""INSERT INTO inventory (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
+  # Debug #CC update github to have restock values in csv
+  cursor.execute("""INSERT INTO inventory (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_restock_value,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
                  VALUES
-                 ("Apples",139.00,10.00,5.00,122.55,50.00,500,"APPLE","Tim Cook","0999666333"),
-                 ("Raspberry",139.00,10.00,5.00,122.55,50.00,500,"RASPBERRY PI","Eben Upton","0111222333"),
-                 ("Orange",139.00,10.00,5.00,122.55,50.00,500,"ORANGE PI","Zhao Yifan","0555666777"),
-                 ("Bannana",139.00,10.00,5.00,122.55,50.00,500,"BANNANA PI","U.N. Owen","0333444555"),
-                 ("Potato",139.00,10.00,5.00,122.55,50.00,500,"LE POTATO LIBRE","W.H. Onos","0777888999");
+                 ("Apples",139.00,10.00,5.00,122.55,50.00,500,50,"APPLE","Tim Cook","0999666333"),
+                 ("Raspberry",139.00,10.00,5.00,122.55,50.00,500,50,"RASPBERRY PI","Eben Upton","0111222333"),
+                 ("Orange",139.00,10.00,5.00,122.55,50.00,500,50,"ORANGE PI","Zhao Yifan","0555666777"),
+                 ("Bannana",139.00,10.00,5.00,122.55,50.00,500,50,"BANNANA PI","U.N. Owen","0333444555"),
+                 ("Potato",139.00,10.00,5.00,122.55,50.00,500,50,"LE POTATO LIBRE","W.H. Onos","0777888999");
                  """) # Debug
   cursor.execute('commit')
 

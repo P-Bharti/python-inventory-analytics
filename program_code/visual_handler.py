@@ -4,7 +4,7 @@ from tkinter.filedialog import askopenfilename
 from numpy import genfromtxt
 from ttkbootstrap import Style
  # DEBUG remove Frame later V
-from ttkbootstrap.widgets import Button, Treeview, Frame
+from ttkbootstrap.widgets import Button, Treeview, Frame, Label
 import database_handler as database_handler
 import matplotlib.pyplot as plt
 import sys
@@ -18,7 +18,7 @@ def run_GUI():
   root = tk.Tk()
   root.title("Python Inventory Analytics")
   root.geometry("660x365")
-  root.resizable(False, False)
+  #root.resizable(False, False) DEBUG
   root.protocol('WM_DELETE_WINDOW', sys.exit)
 
 
@@ -40,7 +40,6 @@ def run_GUI():
 
    # inventory viewer
    inventory_data = database_handler.retrieve_via_sql_query("item_id,item_name,item_cost,item_final_cost,item_stock","inventory")
-
    inventory_viewer = Treeview(inventory_tab,
                                columns = ("item_id","item_name","item_cost","item_final_cost","item_stock"),
                                show = 'headings',
@@ -539,41 +538,51 @@ def run_GUI():
     for i in full_data:
       full_inventory_database_table.insert(parent = '', index = tk.END, values = i)
 
-  def select_previous_item():
-    # retriving the column list
-    # CC make the information common V into one (also in set x axis)
-    table_information = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(table_information)):
-      column_list.append(table_information[i][0])
+  def set_selected_item_name():
+    # retriving the name list
+    table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
 
     # finding current index
-    current_column = selected_item_value.get()
-    current_column_index = column_list.index(current_column)
+    current_column_index = int(selected_item_id.get()[8:])
+
+    # setting to name at the id
+    selected_item_name.set("Item name: " + table_information[current_column_index][1])
+
+  def select_previous_item():
+    # retriving the name list
+    table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
+
+    # finding current index
+    current_column_index = int(selected_item_id.get()[8:])
 
     #in case at the first column
-    if current_column_index - 1 == -1:
-      current_column_index = len(column_list)
+    if current_column_index == 0:
+      current_column_index = len(table_information) - 2
+    else:
+      current_column_index = current_column_index - 1
 
-    selected_item_value.set(column_list[current_column_index - 1])
+    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]-1))
+    set_selected_item_name()
+    set_basic_inventory_turnover()
+    set_reorder_warning()
 
   def select_next_item():
-    # retriving the column list
-    # CC make the information common V into one (also in set x axis)
-    table_information = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(table_information)):
-      column_list.append(table_information[i][0])
+    # retriving the name list (CC optimise this and select prev func.)
+    table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
 
     # finding current index
-    current_column = selected_item_value.get()
-    current_column_index = column_list.index(current_column)
+    current_column_index = int(selected_item_id.get()[8:])
 
-    #in case at the last column
-    if current_column_index + 1 == len(column_list):
-      current_column_index = -1
+    # in case at the last column
+    if current_column_index + 1 == len(table_information):
+      current_column_index = 0
+    else:
+      current_column_index = current_column_index + 1
 
-    selected_item_value.set(column_list[current_column_index + 1])
+    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]-1))
+    set_selected_item_name()
+    set_basic_inventory_turnover()
+    set_reorder_warning()
 
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
@@ -638,7 +647,43 @@ def run_GUI():
 
   debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder ░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
   debug_label2.grid(row = 0) # DEBUG
-  # inventory plotter section
+  # functions for inventory view
+  def get_selected_item_values():
+    selected_item_values = database_handler.retrieve_via_sql_query("item_cost,item_margin,item_stock,item_restock_value","inventory")
+    return(selected_item_values)
+
+  def set_basic_inventory_turnover():
+      selected_item_values = get_selected_item_values()
+      # ^ in format  [(item_name,item_cost,item_margin,item_stock), so on...]
+
+      current_column_index = int(selected_item_id.get()[8:])
+
+      cost = selected_item_values[current_column_index][0]
+      margin = selected_item_values[current_column_index][1]
+      stock = selected_item_values[current_column_index][2]
+
+      if stock == 0:
+          basic_inventory_turnover_value.set("Basic inventory Turnover: 0.0")
+      else:
+        basic_inventory_turnover_value.set("Basic inventory Turnover: " + str((cost * (100 - margin)) / stock))
+
+  def set_reorder_warning():
+      selected_item_values = get_selected_item_values()
+      # ^ in format  [(item_name,item_cost,item_margin,item_stock), so on...]
+
+      current_column_index = int(selected_item_id.get()[8:])
+
+      stock = selected_item_values[current_column_index][2]
+
+      if stock < 100:
+          reorder_warning_value.set("Reorder point reached: True")
+      else:
+        reorder_warning_value.set("Reorder point reached: False")
+
+  def set_low_stocks_list():
+    pass #CC refresh all functions on importing database again/ refresh
+
+  # inventory column 1
   graph_plotter_label = tk.Label(inventory_models_view, text = " ▪▣▓ ▒ ░ Graph Plotter ░ ▒ ▓▣▪ ", relief = "ridge")
   graph_plotter_label.grid(row = 0,
                            column = 0
@@ -773,8 +818,9 @@ def run_GUI():
                   sticky = "nsew"
                   )
 
+  # inventory column 2
   inventory_response_message = tk.StringVar()
-  inventory_response_message_board = tk.Label(inventory_models_view, textvariable = inventory_response_message, relief = "groove") # CC standardardise relief
+  inventory_response_message_board = Label(inventory_models_view, textvariable = inventory_response_message, bootstyle = "inverse-dark") # CC standardardise relief
   inventory_response_message_board.grid(row = 0,
                                         column = 1,
                                         padx = 3,
@@ -787,7 +833,7 @@ def run_GUI():
   full_inventory_database_viewer_button = Button(inventory_models_view,
                                                  text = "View full inventory database",
                                                  command = tabularise_full_inventory_database,
-                                                 bootstyle = "dark"
+                                                 bootstyle = "warning"
                                                  )
   full_inventory_database_viewer_button.grid(row = 2,
                                              column = 1,
@@ -801,7 +847,7 @@ def run_GUI():
                                  column = 1
                                  )
 
-  left_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove") # CC replace ▭▭ with better
+  left_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove")
   left_spacer.grid(row = 0,
                    column = 0,
                    padx = 2
@@ -815,7 +861,7 @@ def run_GUI():
                                  column = 1
                                  )
 
-  right_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove") # CC replace ▭▭ with better
+  right_spacer = tk.Label(itemwise_statistics_frame, text = "     ", relief = "groove")
   right_spacer.grid(row = 0,
                    column = 2,
                    padx = 2
@@ -831,12 +877,12 @@ def run_GUI():
                             padx = 2
                             )
 
-  selected_item_value = tk.StringVar()
+  selected_item_id = tk.StringVar()
   selected_item_label = tk.Label(itemwise_statistics_frame,
-                                 textvariable = selected_item_value,
+                                 textvariable = selected_item_id,
                                  relief = "groove"
                                  )
-  selected_item_value.set("item_id") # CC use meaningful defaults/ use unspecified
+  selected_item_id.set("Item id: 0") # CC use meaningful defaults/ use unspecified
   selected_item_label.grid(row = 1,
                           column = 1,
                           sticky = "nsew"
@@ -851,6 +897,93 @@ def run_GUI():
                         column = 2,
                         padx = 2
                         )
+  
+  selected_item_name = tk.StringVar()
+  selected_item_name_label = tk.Label(inventory_models_view,
+                                 textvariable = selected_item_name,
+                                 relief = "groove"
+                                 )
+  set_selected_item_name()
+  selected_item_name_label.grid(row = 4,
+                                column = 1,
+                                pady = 5,
+                                padx = 2,
+                                sticky = "nsew"
+                                )  
+  
+  basic_inventory_turnover_value = tk.StringVar()
+  basic_inventory_turnover_label = Label(inventory_models_view,
+                                         textvariable = basic_inventory_turnover_value,
+                                         bootstyle = "inverse-dark")
+  set_basic_inventory_turnover()
+  basic_inventory_turnover_label.grid(row = 5,
+                                      column = 1,
+                                      pady = 1,
+                                      padx = 3,
+                                      sticky = "nsew"
+                                      ) 
+  
+  reorder_warning_value = tk.StringVar()
+  reorder_warning_label = Label(inventory_models_view,
+                                         textvariable = reorder_warning_value,
+                                         bootstyle = "inverse-dark")
+  set_reorder_warning()
+  reorder_warning_label.grid(row = 6,
+                                      column = 1,
+                                      pady = 7,
+                                      padx = 3,
+                                      sticky = "nsew"
+                                      ) 
+
+  # inventory column 3
+  inventory_low_stocks_data = database_handler.retrieve_via_sql_query("item_name,item_stock,item_restock_value","inventory")
+  inventory_low_stocks_viewer = Treeview(inventory_models_view,
+                              columns = ("item_name","item_stock_restock_value_difference"),
+                              show = 'headings',
+                              height = 13,
+                              bootstyle = 'success'
+                              )
+  inventory_low_stocks_viewer.grid(row = 1,
+                        column = 2,
+                        rowspan = 6,
+                        sticky = "e"
+                        )
+  
+  reformatted_data = []
+  difference_list = []
+  for i in inventory_low_stocks_data:
+    # inventory_low_stocks_data in format [(item_name,item_stock,item_restock_value)...so on]
+    difference_list.append(i[1]-i[2]) # append the difference between stock and restock value  
+  
+  while len(difference_list) != 0:
+    minimum_difference  = min(difference_list)
+    minimum_difference_index = difference_list.index(minimum_difference)
+
+    minimum_difference_data = inventory_low_stocks_data[minimum_difference_index]
+    reformatted_data.append((minimum_difference_data[0],minimum_difference_data[1]-minimum_difference_data[2])) #appends a tuple in format (name,difference)
+
+    difference_list.pop(minimum_difference_index)
+
+  # creating the scrollbar
+  inventory_low_stocks_scrollbar = ttk.Scrollbar(inventory_models_view, orient = "vertical", command = inventory_low_stocks_viewer.yview)
+  inventory_low_stocks_scrollbar.grid(row = 1,
+                                      rowspan = 6,
+                                      column = 3,
+                                      sticky = "nsew"
+                                      )
+  inventory_low_stocks_viewer.configure(yscrollcommand = inventory_low_stocks_scrollbar.set)
+
+  # initialising columns
+  inventory_low_stocks_viewer.column("item_name", anchor = "center", width = 90)
+  inventory_low_stocks_viewer.heading('item_name', text = 'Name')
+  inventory_low_stocks_viewer.column("item_stock_restock_value_difference", anchor = "center", width = 60)
+  inventory_low_stocks_viewer.heading('item_stock_restock_value_difference', text = "Diff.")
+
+  # insert values into inventory_low_stocks_viewer
+  for i in reformatted_data:
+    inventory_low_stocks_viewer.insert(parent = '', index = tk.END, values = i)
+
+
 
   inventory_models_view.tkraise()
 
