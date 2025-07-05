@@ -130,8 +130,9 @@ def run_GUI():
       try:
         items = genfromtxt(full_inventory_path.get(), delimiter = ",", dtype = None, skip_header = 1, encoding = "utf8")
         database_handler.import_items(items)
-      except:
+      except Exception as e:
         # error with csv file
+        print(e)
         response_message.set("Import Unsuccessful; Please check your CSV")
         spacer.config(fg = "red")
         return None
@@ -164,6 +165,8 @@ def run_GUI():
 
   def refresh():
     populate_data()
+    populate_inventory_low_stocks_data()
+    set_inventory_response_message("Database refreshed")
 
   def switch_to_modelling_view():
     modelling_view.tkraise()
@@ -318,7 +321,26 @@ def run_GUI():
   def switch_to_order_models_view():
     order_models_view.tkraise()
 
+  def set_inventory_response_message(new_message):
+    previous_text = inventory_response_message.get()
+    new_text = ""
+    if previous_text == "       Action status will be displayed here:       \n\n":
+      # ie. response msg board is empty
+      new_text = previous_text[:-1] + "       ▪ " + new_message + " ▪ \n"
+    elif previous_text.count("▪") == 2:
+      # if one msg already in msg board
+      new_text = previous_text + "       ▪ " + new_message + " ▪ "
+    elif previous_text.count("▪") == 4:
+      # message board full
+      messages = previous_text.split(" ▪ ")
+      messages[1] = messages[3]
+      messages[3] =  new_message
+      new_text = " ▪ ".join(messages)
+    
+    inventory_response_message.set(new_text)
+
   def close_plot():
+    set_inventory_response_message("All open plots closed")
     plt.close()
 
   def draw_plot():
@@ -342,6 +364,7 @@ def run_GUI():
       ax.set_xlabel(x_axis)
       ax.set_ylabel(y_axis)
 
+      set_inventory_response_message("x-y Graph drawn")
       plt.show()
     # with z-axis
     elif x_axis != "unspecified" and y_axis != "unspecified" and z_axis != "unspecified":
@@ -376,9 +399,12 @@ def run_GUI():
       ax = plt.axes(projection='3d')
 
       if plot_type.get()[17:] == "Scatter":
+        set_inventory_response_message("x-y-z Scatter Graph drawn")
         ax.scatter(x_plot_data, y_plot_data, z_plot_data, c= range(len(z_axis_list)), cmap='plasma', marker='x') # colours reqiure numeric data always
       if plot_type.get()[17:] == "Line":
+        set_inventory_response_message("x-y-z Line Graph drawn")
         ax.plot3D(x_plot_data, y_plot_data, z_plot_data)
+        
       # replacing the pseudo-numbers (for string data) in the above statement by actual data if present (required to avoid datatype issues)
       if x_axis_type_string == True:
         ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
@@ -404,6 +430,11 @@ def run_GUI():
     if current_index == len(plot_type_list) - 1:
       current_index = -1
     current_index += 1
+
+    if current_index == 0:
+      set_inventory_response_message("Graph type set to Scatter")
+    else:
+      set_inventory_response_message("Graph type set to Line")
 
     plot_type.set("📈 3D Graph type: " + plot_type_list[current_index])
 
@@ -496,7 +527,7 @@ def run_GUI():
     # Create a new window
     full_inventory_database_window = tk.Toplevel(inventory_models_view)
     full_inventory_database_window.title("Full inventory viewer")
-    full_inventory_database_window.geometry("1610x360")
+    full_inventory_database_window.geometry("1757x360")
     full_inventory_database_window.resizable(False, False)
 
     # Get header list (CC make into a function maybe?)
@@ -538,6 +569,8 @@ def run_GUI():
     for i in full_data:
       full_inventory_database_table.insert(parent = '', index = tk.END, values = i)
 
+    set_inventory_response_message("Opened full inventory viewer")
+
   def set_selected_item_name():
     # retriving the name list
     table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
@@ -546,6 +579,7 @@ def run_GUI():
     current_column_index = int(selected_item_id.get()[8:])
 
     # setting to name at the id
+    set_inventory_response_message("Item set to: " + table_information[current_column_index][1] )
     selected_item_name.set("Item name: " + table_information[current_column_index][1])
 
   def select_previous_item():
@@ -647,7 +681,7 @@ def run_GUI():
 
   debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder ░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
   debug_label2.grid(row = 0) # DEBUG
-  # functions for inventory view
+  # functions for inventory view # CC merge with above? / make more accurate
   def get_selected_item_values():
     selected_item_values = database_handler.retrieve_via_sql_query("item_cost,item_margin,item_stock,item_restock_value","inventory")
     return(selected_item_values)
@@ -680,8 +714,57 @@ def run_GUI():
       else:
         reorder_warning_value.set("Reorder point reached: False")
 
-  def set_low_stocks_list():
-    pass #CC refresh all functions on importing database again/ refresh
+  def populate_inventory_low_stocks_data():
+    inventory_low_stocks_viewer_frame = tk.Frame(inventory_models_view)
+    inventory_low_stocks_viewer_frame.grid(row = 1,
+                                           column = 2,
+                                           rowspan = 6,
+                                           sticky = "e"
+                                           )
+    
+    inventory_low_stocks_data = database_handler.retrieve_via_sql_query("item_name,item_stock,item_restock_value","inventory")
+    inventory_low_stocks_viewer = Treeview(inventory_low_stocks_viewer_frame,
+                                           columns = ("item_name","item_stock_restock_value_difference"),
+                                           show = 'headings',
+                                           height = 13,
+                                           bootstyle = 'success'
+                                           )
+    inventory_low_stocks_viewer.grid(row = 1,
+                                     column = 1
+                                     )
+    
+    reformatted_data = []
+    difference_list = []
+    for i in inventory_low_stocks_data:
+      # inventory_low_stocks_data in format [(item_name,item_stock,item_restock_value)...so on]
+      difference_list.append(i[1]-i[2]) # append the difference between stock and restock value  
+    
+    while len(difference_list) != 0:
+      minimum_difference  = min(difference_list)
+      minimum_difference_index = difference_list.index(minimum_difference)
+
+      minimum_difference_data = inventory_low_stocks_data[minimum_difference_index]
+      reformatted_data.append((minimum_difference_data[0],minimum_difference_data[1]-minimum_difference_data[2])) #appends a tuple in format (name,difference)
+
+      difference_list.pop(minimum_difference_index)
+
+    # creating the scrollbar
+    inventory_low_stocks_scrollbar = ttk.Scrollbar(inventory_low_stocks_viewer_frame, orient = "vertical", command = inventory_low_stocks_viewer.yview)
+    inventory_low_stocks_scrollbar.grid(row = 1,
+                                        column = 2,
+                                        sticky = "nsew"
+                                        )
+    inventory_low_stocks_viewer.configure(yscrollcommand = inventory_low_stocks_scrollbar.set)
+
+    # initialising columns
+    inventory_low_stocks_viewer.column("item_name", anchor = "center", width = 85)
+    inventory_low_stocks_viewer.heading('item_name', text = 'Name')
+    inventory_low_stocks_viewer.column("item_stock_restock_value_difference", anchor = "center", width = 55)
+    inventory_low_stocks_viewer.heading('item_stock_restock_value_difference', text = "Diff.")
+
+    # insert values into inventory_low_stocks_viewer
+    for i in reformatted_data:
+      inventory_low_stocks_viewer.insert(parent = '', index = tk.END, values = i)
 
   # inventory column 1
   graph_plotter_label = tk.Label(inventory_models_view, text = " ▪▣▓ ▒ ░ Graph Plotter ░ ▒ ▓▣▪ ", relief = "ridge")
@@ -936,53 +1019,12 @@ def run_GUI():
                                       ) 
 
   # inventory column 3
-  inventory_low_stocks_data = database_handler.retrieve_via_sql_query("item_name,item_stock,item_restock_value","inventory")
-  inventory_low_stocks_viewer = Treeview(inventory_models_view,
-                              columns = ("item_name","item_stock_restock_value_difference"),
-                              show = 'headings',
-                              height = 13,
-                              bootstyle = 'success'
-                              )
-  inventory_low_stocks_viewer.grid(row = 1,
-                        column = 2,
-                        rowspan = 6,
-                        sticky = "e"
-                        )
-  
-  reformatted_data = []
-  difference_list = []
-  for i in inventory_low_stocks_data:
-    # inventory_low_stocks_data in format [(item_name,item_stock,item_restock_value)...so on]
-    difference_list.append(i[1]-i[2]) # append the difference between stock and restock value  
-  
-  while len(difference_list) != 0:
-    minimum_difference  = min(difference_list)
-    minimum_difference_index = difference_list.index(minimum_difference)
-
-    minimum_difference_data = inventory_low_stocks_data[minimum_difference_index]
-    reformatted_data.append((minimum_difference_data[0],minimum_difference_data[1]-minimum_difference_data[2])) #appends a tuple in format (name,difference)
-
-    difference_list.pop(minimum_difference_index)
-
-  # creating the scrollbar
-  inventory_low_stocks_scrollbar = ttk.Scrollbar(inventory_models_view, orient = "vertical", command = inventory_low_stocks_viewer.yview)
-  inventory_low_stocks_scrollbar.grid(row = 1,
-                                      rowspan = 6,
-                                      column = 3,
-                                      sticky = "nsew"
-                                      )
-  inventory_low_stocks_viewer.configure(yscrollcommand = inventory_low_stocks_scrollbar.set)
-
-  # initialising columns
-  inventory_low_stocks_viewer.column("item_name", anchor = "center", width = 90)
-  inventory_low_stocks_viewer.heading('item_name', text = 'Name')
-  inventory_low_stocks_viewer.column("item_stock_restock_value_difference", anchor = "center", width = 60)
-  inventory_low_stocks_viewer.heading('item_stock_restock_value_difference', text = "Diff.")
-
-  # insert values into inventory_low_stocks_viewer
-  for i in reformatted_data:
-    inventory_low_stocks_viewer.insert(parent = '', index = tk.END, values = i)
-
+  inventory_low_stocks_label = tk.Label(inventory_models_view, text = "▣ Stocks Till Restock ▣", relief = "ridge")
+  inventory_low_stocks_label.grid(row = 0,
+                                  column = 2,
+                                  sticky = "nsewe"
+                                  )  
+  populate_inventory_low_stocks_data()
 
 
   inventory_models_view.tkraise()

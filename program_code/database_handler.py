@@ -39,7 +39,7 @@ def enter_mysql():
 def import_items(values):
 
     # values is a list of tuples; each tuple describes an item in the format: (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
-    command = """INSERT INTO inventory (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
+    command = """INSERT INTO inventory (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_restock_value,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
                 VALUES
             """
 
