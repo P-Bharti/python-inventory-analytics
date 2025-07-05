@@ -911,7 +911,7 @@ def run_GUI():
                                         rowspan = 2,
                                         sticky = "nsew"
                                         )
-  inventory_response_message.set("       Action status will be displayed here:       \n\n") # CC add msgs CC make pretty?
+  inventory_response_message.set("       Action status will be displayed here:       \n\n")
 
   full_inventory_database_viewer_button = Button(inventory_models_view,
                                                  text = "View full inventory database",
