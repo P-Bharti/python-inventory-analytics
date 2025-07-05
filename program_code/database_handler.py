@@ -76,14 +76,22 @@ def import_orders(values):
     cursor.execute("commit")
     cursor.close()
 
-def retrieve_via_sql_query(sql_select, sql_from, sql_where = ""):
+def retrieve_via_sql_query(sql_select, sql_from, sql_where = "", sql_group_by = ""):
     command = "SELECT " + sql_select + "\n"
 
-    if sql_where == "":
+    if sql_where == "" and sql_group_by == "":
+        # sql command with select and from only
         command += "FROM " + sql_from + ";" # if no where clause specified
-    else:
+    elif sql_where != "" and sql_group_by == "":
+        #sql command with select, from and where
         command += "FROM " + sql_from + "\n"
         command += "WHERE " + sql_where + ";"
+    else:
+        #sql command with select, from and group by
+        command += "FROM " + sql_from + "\n"
+        command += "GROUP BY " + sql_group_by + ";"
+
+
 
     cursor = conn_obj.cursor()
     cursor.execute(command)

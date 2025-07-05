@@ -4,7 +4,7 @@ from tkinter.filedialog import askopenfilename
 from numpy import genfromtxt
 from ttkbootstrap import Style
  # DEBUG remove Frame later V
-from ttkbootstrap.widgets import Button, Treeview, Frame, Label
+from ttkbootstrap.widgets import Button, Treeview, Label
 import database_handler as database_handler
 import matplotlib.pyplot as plt
 import sys
@@ -166,6 +166,7 @@ def run_GUI():
   def refresh():
     populate_data()
     populate_inventory_low_stocks_data()
+    populate_orders_highest_spends_data()
     set_inventory_response_message("Database refreshed")
 
   def switch_to_modelling_view():
@@ -339,24 +340,51 @@ def run_GUI():
     
     inventory_response_message.set(new_text)
 
+  def set_orders_response_message(new_message):
+    previous_text = orders_response_message.get()
+    new_text = ""
+    if previous_text == "       Action status will be displayed here:       \n\n":
+      # ie. response msg board is empty
+      new_text = previous_text[:-1] + "       ▪ " + new_message + " ▪ \n"
+    elif previous_text.count("▪") == 2:
+      # if one msg already in msg board
+      new_text = previous_text + "       ▪ " + new_message + " ▪ "
+    elif previous_text.count("▪") == 4:
+      # message board full
+      messages = previous_text.split(" ▪ ")
+      messages[1] = messages[3]
+      messages[3] =  new_message
+      new_text = " ▪ ".join(messages)
+    
+    orders_response_message.set(new_text)
+
   def close_plot():
     set_inventory_response_message("All open plots closed")
+    set_orders_response_message("All open plots closed")
     plt.close()
 
-  def draw_plot():
+  def draw_plot(use_orders_table = False):
     #first, remove existing plot
     close_plot()
 
-    x_axis = x_axis_column_name.get()
-    y_axis = y_axis_column_name.get()
-    z_axis = z_axis_column_name.get()
+    if use_orders_table == False:
+      x_axis = x_axis_column_name.get()
+      y_axis = y_axis_column_name.get()
+      z_axis = z_axis_column_name.get()
+    else:
+      x_axis = orders_x_axis_column_name.get()
+      y_axis = orders_y_axis_column_name.get()
+      z_axis = orders_z_axis_column_name.get()      
 
     # CC add error msgs everywhere in code
     # without z-axis
     if x_axis != "unspecified" and y_axis != "unspecified" and z_axis == "unspecified":
-      inventory_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis), "inventory")
-      x_axis_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
-      y_axis_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
+      if use_orders_table == False:
+        retrieved_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis), "inventory")
+      else:
+        retrieved_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis), "orders")
+      x_axis_list = [retrieved_data[i][0] for i in range(0,len(retrieved_data))]
+      y_axis_list = [retrieved_data[i][1] for i in range(0,len(retrieved_data))]
 
       ax = plt.axes()
       ax.plot(x_axis_list, y_axis_list, marker = 'x')
@@ -368,29 +396,36 @@ def run_GUI():
       plt.show()
     # with z-axis
     elif x_axis != "unspecified" and y_axis != "unspecified" and z_axis != "unspecified":
-      inventory_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis + "," + z_axis), "inventory")
-      x_axis_list = [inventory_data[i][0] for i in range(0,len(inventory_data))]
-      y_axis_list = [inventory_data[i][1] for i in range(0,len(inventory_data))]
-      z_axis_list = [inventory_data[i][2] for i in range(0,len(inventory_data))]
+      if use_orders_table == False:
+        retrieved_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis + "," + z_axis), "inventory")
+      else:
+        retrieved_data = database_handler.retrieve_via_sql_query(str(x_axis + "," + y_axis + "," + z_axis), "orders")
+
+      x_axis_list = [retrieved_data[i][0] for i in range(0,len(retrieved_data))]
+      y_axis_list = [retrieved_data[i][1] for i in range(0,len(retrieved_data))]
+      z_axis_list = [retrieved_data[i][2] for i in range(0,len(retrieved_data))]
 
       # checking if type is string as need to treat them diffenently in plot
       x_axis_type_string = False
       y_axis_type_string = False
       z_axis_type_string = False
 
-      if isinstance(x_axis_list[0], str) == True:
+      if isinstance(x_axis_list[0], int) == False and isinstance(x_axis_list[0], float) == False:
+        # to check if string/date
         x_axis_type_string = True
         x_plot_data = range(len(x_axis_list))
       else:
         x_plot_data = x_axis_list
 
-      if isinstance(y_axis_list[0], str) == True:
+      if isinstance(y_axis_list[0], int) == False and isinstance(y_axis_list[0], float) == False:
+        #to check if string/date
         y_axis_type_string = True
         y_plot_data = range(len(y_axis_list))
       else:
         y_plot_data = y_axis_list
 
-      if isinstance(z_axis_list[0], str) == True:
+      if isinstance(z_axis_list[0], int) == False and isinstance(z_axis_list[0], float) == False:
+        #to check if string/date
         z_axis_type_string = True
         z_plot_data = range(len(z_axis_list))
       else:
@@ -399,10 +434,10 @@ def run_GUI():
       ax = plt.axes(projection='3d')
 
       if plot_type.get()[17:] == "Scatter":
-        set_inventory_response_message("x-y-z Scatter Graph drawn")
+        set_orders_response_message("x-y-z Scatter Graph drawn")
         ax.scatter(x_plot_data, y_plot_data, z_plot_data, c= range(len(z_axis_list)), cmap='plasma', marker='x') # colours reqiure numeric data always
       if plot_type.get()[17:] == "Line":
-        set_inventory_response_message("x-y-z Line Graph drawn")
+        set_orders_response_message("x-y-z Line Graph drawn")
         ax.plot3D(x_plot_data, y_plot_data, z_plot_data)
         
       # replacing the pseudo-numbers (for string data) in the above statement by actual data if present (required to avoid datatype issues)
@@ -433,143 +468,276 @@ def run_GUI():
 
     if current_index == 0:
       set_inventory_response_message("Graph type set to Scatter")
+      set_orders_response_message("Graph type set to Scatter")
     else:
       set_inventory_response_message("Graph type set to Line")
+      set_orders_response_message("Graph type set to Line")
 
     plot_type.set("📈 3D Graph type: " + plot_type_list[current_index])
 
-  def set_x_axis():
+  def set_x_axis(use_orders_table = False):
     # retriving the column list
     # CC make the information common in all three functions into one
-    table_information = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(table_information)):
-      column_list.append(table_information[i][0])
+    if use_orders_table == False:
+      table_information = database_handler.retrieve_headers("inventory")
 
-    # finding current index
-    current_column = x_axis_column_name.get()
-    try:
-      current_column_index = column_list.index(current_column)
-    except:
-      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
-      current_column_index = -1
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
 
-    #in case at the last column
-    if current_column_index + 1 == len(column_list):
-      current_column_index = -1
+      # finding current index
+      current_column = x_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
 
-    x_axis_column_name.set(column_list[current_column_index + 1])
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
 
-    #formating the text
-    if len(x_axis_column_name.get()) < 25:
-      x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get())
+      x_axis_column_name.set(column_list[current_column_index + 1])
+
+      #formating the text
+      if len(x_axis_column_name.get()) < 25:
+        x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get())
+      else:
+        x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get()[0:22] + "...")
     else:
-      x_axis.set("Set Graph's X-Axis:\n" + x_axis_column_name.get()[0:22] + "...")
+      # use orders information
+      table_information = database_handler.retrieve_headers("orders")
 
-  def set_y_axis():
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
+
+      # finding current index
+      current_column = orders_x_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
+
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
+
+      orders_x_axis_column_name.set(column_list[current_column_index + 1])
+
+      #formating the text
+      if len(orders_x_axis_column_name.get()) < 25:
+        orders_x_axis.set("Set Graph's X-Axis:\n" + orders_x_axis_column_name.get())
+      else:
+        orders_x_axis.set("Set Graph's X-Axis:\n" + orders_x_axis_column_name.get()[0:22] + "...")
+
+  def set_y_axis(use_orders_table = False):
     # retriving the column list
-    table_information = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(table_information)):
-      column_list.append(table_information[i][0])
+    if use_orders_table == False:
+      table_information = database_handler.retrieve_headers("inventory")
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
 
-    # finding current index
-    current_column = y_axis_column_name.get()
-    try:
-      current_column_index = column_list.index(current_column)
-    except:
-      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
-      current_column_index = -1
+      # finding current index
+      current_column = y_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
 
-    #in case at the last column
-    if current_column_index + 1 == len(column_list):
-      current_column_index = -1
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
 
-    y_axis_column_name.set(column_list[current_column_index + 1])
+      y_axis_column_name.set(column_list[current_column_index + 1])
 
-    #formating the text
-    if len(y_axis_column_name.get()) < 25:
-      y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get())
+      #formating the text
+      if len(y_axis_column_name.get()) < 25:
+        y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get())
+      else:
+        y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get()[0:22] + "...")
     else:
-      y_axis.set("Set Graph's Y-Axis:\n" + y_axis_column_name.get()[0:22] + "...")
+      table_information = database_handler.retrieve_headers("orders")
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
 
-  def set_z_axis():
-    # retriving the column list
-    table_information = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(table_information)):
-      column_list.append(table_information[i][0])
+      # finding current index
+      current_column = orders_y_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
 
-    #as 3d plotting is optional,
-    column_list.append("unspecified")
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
 
-    # finding current index
-    current_column = z_axis_column_name.get()
-    try:
-      current_column_index = column_list.index(current_column)
-    except:
-      #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
-      current_column_index = -1
+      orders_y_axis_column_name.set(column_list[current_column_index + 1])
 
-    #in case at the last column
-    if current_column_index + 1 == len(column_list):
-      current_column_index = -1
+      #formating the text
+      if len(orders_y_axis_column_name.get()) < 25:
+        orders_y_axis.set("Set Graph's Y-Axis:\n" + orders_y_axis_column_name.get())
+      else:
+        orders_y_axis.set("Set Graph's Y-Axis:\n" + orders_y_axis_column_name.get()[0:22] + "...")
 
-    z_axis_column_name.set(column_list[current_column_index + 1])
+  def set_z_axis(use_orders_table = False):
+    if use_orders_table == False:
+      # retriving the column list
+      table_information = database_handler.retrieve_headers("inventory")
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
 
-    #formating the text
-    if len(z_axis_column_name.get()) < 25:
-      z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
+      #as 3d plotting is optional,
+      column_list.append("unspecified")
+
+      # finding current index
+      current_column = z_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
+
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
+
+      z_axis_column_name.set(column_list[current_column_index + 1])
+
+      #formating the text
+      if len(z_axis_column_name.get()) < 25:
+        z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get())
+      else:
+        z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
     else:
-      z_axis.set("Set Graph's Z-Axis:\n" + z_axis_column_name.get()[0:22] + "...")
+      # retriving the column list
+      table_information = database_handler.retrieve_headers("orders")
+      column_list = []
+      for i in range(0,len(table_information)):
+        column_list.append(table_information[i][0])
 
-  def tabularise_full_inventory_database():
-    # Create a new window
-    full_inventory_database_window = tk.Toplevel(inventory_models_view)
-    full_inventory_database_window.title("Full inventory viewer")
-    full_inventory_database_window.geometry("1757x360")
-    full_inventory_database_window.resizable(False, False)
+      #as 3d plotting is optional,
+      column_list.append("unspecified")
 
-    # Get header list (CC make into a function maybe?)
-    headers = database_handler.retrieve_headers("inventory")
-    column_list = []
-    for i in range(0,len(headers)):
-      header_name = headers[i][0][5:]
-      if "manufacturer_" in header_name:
-        header_name = "Manf. " + header_name[13:]
-      column_list.append(header_name)
+      # finding current index
+      current_column = orders_z_axis_column_name.get()
+      try:
+        current_column_index = column_list.index(current_column)
+      except:
+        #CC add a msg for x axis not set yet (right now, it just sts it to -1 then +1 below so sets to the zeroth position)
+        current_column_index = -1
 
-    full_data = database_handler.retrieve_via_sql_query("*","inventory")
+      #in case at the last column
+      if current_column_index + 1 == len(column_list):
+        current_column_index = -1
 
-    full_inventory_database_table = Treeview(full_inventory_database_window,
-                               columns = column_list,
-                               show = 'headings',
-                               height = 17,
-                               bootstyle = 'success'
-                               )
-    full_inventory_database_table.grid(row = 0,
-                          column = 0,
-                          sticky = "nsew"
-                          )
+      orders_z_axis_column_name.set(column_list[current_column_index + 1])
 
-    # creating the scrollbar
-    scrollbar = ttk.Scrollbar(full_inventory_database_window, orient = "vertical", command = full_inventory_database_table.yview)
-    scrollbar.grid(row = 0,
-                   column = 1,
-                   sticky = "nsew"
-                   )
-    full_inventory_database_table.configure(yscrollcommand = scrollbar.set)
+      #formating the text
+      if len(orders_z_axis_column_name.get()) < 25:
+        orders_z_axis.set("Set Graph's Z-Axis:\n" + orders_z_axis_column_name.get())
+      else:
+        orders_z_axis.set("Set Graph's Z-Axis:\n" + orders_z_axis_column_name.get()[0:22] + "...")
 
-    # initialising columns CC make full_inventory_database_table name shorter and other names in general too
-    for i in column_list:
-      full_inventory_database_table.column(i, anchor = "center", width = 145)
-      full_inventory_database_table.heading(i, text = i)
+  def tabularise_full_inventory_database(use_orders_table = False):
+    if use_orders_table == False:
+      # Create a new window
+      full_inventory_database_window = tk.Toplevel(inventory_models_view)
+      full_inventory_database_window.title("Full inventory viewer")
+      full_inventory_database_window.geometry("1757x360")
+      full_inventory_database_window.resizable(False, False)
 
-    # insert values into full_inventory_database_window
-    for i in full_data:
-      full_inventory_database_table.insert(parent = '', index = tk.END, values = i)
+      # Get header list (CC make into a function maybe?)
+      headers = database_handler.retrieve_headers("inventory")
+      column_list = []
+      for i in range(0,len(headers)):
+        header_name = headers[i][0][5:]
+        if "manufacturer_" in header_name:
+          header_name = "Manf. " + header_name[13:]
+        column_list.append(header_name)
 
-    set_inventory_response_message("Opened full inventory viewer")
+      full_data = database_handler.retrieve_via_sql_query("*","inventory")
+
+      full_inventory_database_table = Treeview(full_inventory_database_window,
+                                columns = column_list,
+                                show = 'headings',
+                                height = 17,
+                                bootstyle = 'success'
+                                )
+      full_inventory_database_table.grid(row = 0,
+                            column = 0,
+                            sticky = "nsew"
+                            )
+
+      # creating the scrollbar
+      scrollbar = ttk.Scrollbar(full_inventory_database_window, orient = "vertical", command = full_inventory_database_table.yview)
+      scrollbar.grid(row = 0,
+                    column = 1,
+                    sticky = "nsew"
+                    )
+      full_inventory_database_table.configure(yscrollcommand = scrollbar.set)
+
+      # initialising columns CC make full_inventory_database_table name shorter and other names in general too
+      for i in column_list:
+        full_inventory_database_table.column(i, anchor = "center", width = 145)
+        full_inventory_database_table.heading(i, text = i)
+
+      # insert values into full_inventory_database_window
+      for i in full_data:
+        full_inventory_database_table.insert(parent = '', index = tk.END, values = i)
+
+      set_inventory_response_message("Opened full inventory viewer")
+    else:
+      # Create a new window
+      full_orders_database_window = tk.Toplevel(order_models_view)
+      full_orders_database_window.title("Full Orders viewer")
+      full_orders_database_window.geometry("1465x360")
+      full_orders_database_window.resizable(False, False)
+
+      # Get header list (CC make into a function maybe?)
+      headers = database_handler.retrieve_headers("orders")
+      column_list = []
+      for i in range(0,len(headers)):
+        header_name = headers[i][0][6:]
+        column_list.append(header_name)
+
+      full_data = database_handler.retrieve_via_sql_query("*","orders")
+
+      full_orders_database_table = Treeview(full_orders_database_window,
+                                columns = column_list,
+                                show = 'headings',
+                                height = 17,
+                                bootstyle = 'success'
+                                )
+      full_orders_database_table.grid(row = 0,
+                            column = 0,
+                            sticky = "nsew"
+                            )
+
+      # creating the scrollbar
+      scrollbar = ttk.Scrollbar(full_orders_database_window, orient = "vertical", command = full_orders_database_table.yview)
+      scrollbar.grid(row = 0,
+                    column = 1,
+                    sticky = "nsew"
+                    )
+      full_orders_database_table.configure(yscrollcommand = scrollbar.set)
+
+      # initialising columns CC make full_inventory_database_table name shorter and other names in general too
+      for i in column_list:
+        full_orders_database_table.column(i, anchor = "center", width = 145)
+        full_orders_database_table.heading(i, text = i)
+
+      # insert values into full_inventory_database_window
+      for i in full_data:
+        full_orders_database_table.insert(parent = '', index = tk.END, values = i)
+
+      set_orders_response_message("Opened full orders viewer")
 
   def set_selected_item_name():
     # retriving the name list
@@ -584,7 +752,7 @@ def run_GUI():
 
   def select_previous_item():
     # retriving the name list
-    table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
+    table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory") # CC why taking so many?
 
     # finding current index
     current_column_index = int(selected_item_id.get()[8:])
@@ -672,15 +840,13 @@ def run_GUI():
                              )
 
   # padx = (10,0) pads only on left side
-  order_models_view = Frame(modelling_view, bootstyle = "success") # DEBUG Frame instead of tk.frame
+  order_models_view = tk.Frame(modelling_view)
   order_models_view.grid(row = 1,
                          columnspan = 2,
                          padx = (10,0),
                          sticky = "nsew"
                          )
 
-  debug_label2 = tk.Label(order_models_view, text = "   ▭▭▪▣▓ ▒ ░ Temp Orders View Placeholder ░ ▒ ▓▣▪▭▭   ", relief = "ridge", font = "TkFixedFont")# DEBUG
-  debug_label2.grid(row = 0) # DEBUG
   # functions for inventory view # CC merge with above? / make more accurate
   def get_selected_item_values():
     selected_item_values = database_handler.retrieve_via_sql_query("item_cost,item_margin,item_stock,item_restock_value","inventory")
@@ -734,6 +900,7 @@ def run_GUI():
                                      )
     
     reformatted_data = []
+    temp_inventory_low_stocks_data = inventory_low_stocks_data
     difference_list = []
     for i in inventory_low_stocks_data:
       # inventory_low_stocks_data in format [(item_name,item_stock,item_restock_value)...so on]
@@ -743,9 +910,10 @@ def run_GUI():
       minimum_difference  = min(difference_list)
       minimum_difference_index = difference_list.index(minimum_difference)
 
-      minimum_difference_data = inventory_low_stocks_data[minimum_difference_index]
+      minimum_difference_data = temp_inventory_low_stocks_data[minimum_difference_index]
       reformatted_data.append((minimum_difference_data[0],minimum_difference_data[1]-minimum_difference_data[2])) #appends a tuple in format (name,difference)
 
+      temp_inventory_low_stocks_data.pop(minimum_difference_index)
       difference_list.pop(minimum_difference_index)
 
     # creating the scrollbar
@@ -1027,6 +1195,405 @@ def run_GUI():
   populate_inventory_low_stocks_data()
 
 
+  # functions for orders view CC clean up to make consistant with inventory view
+  def orders_set_x_axis():
+    set_x_axis(use_orders_table = True)
+
+  def orders_set_y_axis():
+    set_y_axis(use_orders_table = True)
+
+  def orders_set_z_axis():
+    set_z_axis(use_orders_table = True)
+
+  def orders_draw_plot():
+    draw_plot(use_orders_table = True)
+ 
+  def orders_tabularise_full_database():
+    tabularise_full_inventory_database(use_orders_table = True)
+
+  def set_selected_order_name():
+    # retriving the name list
+    table_information = database_handler.retrieve_via_sql_query("order_id,order_customer_name","orders")
+
+    # finding current index
+    current_column_index = int(selected_order_id.get()[9:])
+
+    # setting to name at the id
+    set_orders_response_message("Order id set to: " + str(table_information[current_column_index][0]-1))
+    selected_order_name.set("Customer name: " + table_information[current_column_index][1])
+
+  def select_previous_order():
+    # retriving the name list
+    table_information = database_handler.retrieve_via_sql_query("order_id,order_customer_name","orders")
+
+    # finding current index
+    current_column_index = int(selected_order_id.get()[8:])
+
+    #in case at the first column
+    if current_column_index == 0:
+      current_column_index = len(table_information) - 2
+    else:
+      current_column_index = current_column_index - 1
+
+    selected_item_id.set("Order id: " + str(table_information[current_column_index][0]-1))
+    set_selected_order_name()
+    set_customer_spend_value()
+    set_order_customer_number()
+
+  def select_next_order():
+    # retriving the name list (CC optimise this and select prev func.)
+    table_information = database_handler.retrieve_via_sql_query("order_id","orders")
+
+    # finding current index
+    current_column_index = int(selected_order_id.get()[9:])
+
+    # in case at the last column
+    if current_column_index + 1 == len(table_information):
+      current_column_index = 0
+    else:
+      current_column_index = current_column_index + 1
+
+    selected_order_id.set("Order id: " + str(table_information[current_column_index][0]-1))
+    set_selected_order_name()
+    set_customer_spend_value()
+    set_order_customer_number()
+
+  def set_customer_spend_value():
+
+    current_order_id = int(selected_order_id.get()[9:]) + 1
+    where_clause = "order_id =" + str(current_order_id)
+
+    retrieved_data = database_handler.retrieve_via_sql_query("order_id,order_final_cost,order_quantity","orders",where_clause)
+
+    #retrieved_data in format [(order_id,order_final_cost,order_quantity)]
+    customer_spend_value.set("Total amt: " + str(retrieved_data[0][1]*retrieved_data[0][2]))
+
+  def set_order_customer_number():
+    current_order_id = int(selected_order_id.get()[9:]) + 1
+    where_clause = "order_id =" + str(current_order_id)
+
+    retrieved_data = database_handler.retrieve_via_sql_query("order_id,order_customer_contact_no","orders",where_clause)
+
+    #retrieved_data in format [(order_id,order_customer_contact_no)]
+    try:
+      order_customer_number.set("Contact Number: " + str(retrieved_data[0][1]))
+    except:
+      # incase the customer didn't give their phone number
+      order_customer_number.set("Contact Number: Not Available")
+
+  def populate_orders_highest_spends_data():
+    orders_highest_spends_viewer_frame = tk.Frame(order_models_view)
+    orders_highest_spends_viewer_frame.grid(row = 1,
+                                           column = 2,
+                                           rowspan = 6,
+                                           sticky = "e"
+                                           )
+    
+    orders_highest_spends_data = database_handler.retrieve_via_sql_query("order_customer_name,sum(order_final_cost*order_quantity) as total_spend","orders",sql_group_by = "order_customer_name")
+    orders_highest_spends_viewer = Treeview(orders_highest_spends_viewer_frame,
+                                           columns = ("order_customer_name","total_spend"),
+                                           show = 'headings',
+                                           height = 13,
+                                           bootstyle = 'success'
+                                           )
+    orders_highest_spends_viewer.grid(row = 1,
+                                     column = 1
+                                     )
+    
+    orders_reformatted_data = []
+    temp_orders_highest_spends_data = orders_highest_spends_data
+    total_spends_list = []
+    for i in orders_highest_spends_data:
+      # orders_highest_spends_data in format [(order_customer_name,total_spend)...so on]
+      total_spends_list.append(i[1]) # append the total spend
+    
+    while len(total_spends_list) != 0:
+      maximum_spend_index = total_spends_list.index(max(total_spends_list))
+
+      maximum_spend_data = temp_orders_highest_spends_data[maximum_spend_index]
+      orders_reformatted_data.append((maximum_spend_data[0],maximum_spend_data[1])) #appends a tuple in format (name,total_spend)
+
+      temp_orders_highest_spends_data.pop(maximum_spend_index)
+      total_spends_list.pop(maximum_spend_index)
+    # creating the scrollbar
+    orders_highest_spends_scrollbar = ttk.Scrollbar(orders_highest_spends_viewer_frame, orient = "vertical", command = orders_highest_spends_viewer.yview)
+    orders_highest_spends_scrollbar.grid(row = 1,
+                                        column = 2,
+                                        sticky = "nsew"
+                                        )
+    orders_highest_spends_viewer.configure(yscrollcommand = orders_highest_spends_scrollbar.set)
+
+    # initialising columns
+    orders_highest_spends_viewer.column("order_customer_name", anchor = "center", width = 75)
+    orders_highest_spends_viewer.heading('order_customer_name', text = 'Name')
+    orders_highest_spends_viewer.column("total_spend", anchor = "center", width = 65)
+    orders_highest_spends_viewer.heading('total_spend', text = "Total")
+
+    # insert values into orders_highest_spends_viewer
+    for i in orders_reformatted_data:
+      orders_highest_spends_viewer.insert(parent = '', index = tk.END, values = i)
+
+  # orders column 1
+  orders_graph_plotter_label = tk.Label(order_models_view, text = " ▪▣▓ ▒ ░ Graph Plotter ░ ▒ ▓▣▪ ", relief = "ridge")
+  orders_graph_plotter_label.grid(row = 0,
+                           column = 0
+                           )
+  # CC check orders cleanup went okay
+
+  orders_x_axis = tk.StringVar()
+  orders_x_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  orders_set_x_axis_button = tk.Button(order_models_view,
+                                 textvariable = orders_x_axis,
+                                 command = orders_set_x_axis
+                                 )
+  orders_set_x_axis_button.grid(row = 1,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  orders_x_axis_column_name.set("unspecified")
+  orders_x_axis.set("Set Graph's X-Axis:\n" + orders_x_axis_column_name.get())
+
+  orders_y_axis = tk.StringVar()
+  orders_y_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  orders_set_y_axis_button = tk.Button(order_models_view,
+                                 textvariable = orders_y_axis,
+                                 command = orders_set_y_axis
+                                 )
+  orders_set_y_axis_button.grid(row = 2,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  orders_y_axis_column_name.set("unspecified")
+  orders_y_axis.set("Set Graph's Y-Axis:\n" + orders_y_axis_column_name.get())
+
+  orders_z_axis = tk.StringVar()
+  orders_z_axis_column_name = tk.StringVar() # CC place it like in modelling view (cleanup)
+  orders_set_z_axis_button = tk.Button(order_models_view,
+                                 textvariable = orders_z_axis,
+                                 command = orders_set_z_axis
+                                 )
+  orders_set_z_axis_button.grid(row = 3,
+                        column = 0,
+                        pady = 2,
+                        sticky = "nsew"
+                        )
+  orders_z_axis_column_name.set("unspecified")
+  orders_z_axis.set("Set Graph's Z-Axis:\n" + orders_z_axis_column_name.get())
+
+  orders_plot_button_frame = tk.Frame(order_models_view)
+  orders_plot_button_frame.grid(row = 4,
+                            column = 0,
+                            sticky = "nsew"
+                            )
+
+  orders_scatter_plot_button = Button(orders_plot_button_frame,
+                                 text = "📊 Plot Graph",
+                                 command = orders_draw_plot,
+                                 bootstyle = "warning-outline"
+                                 )
+  orders_scatter_plot_button.grid(row = 0,
+                        column = 0,
+                        padx = 2,
+                        pady = 5
+                        ) # CC fix formatting of tabs ^
+
+  orders_graph_close_button = Button(orders_plot_button_frame,
+                                 text = "Close Graph",
+                                 command = close_plot,
+                                 bootstyle = "success-outline"
+                                 )
+  orders_graph_close_button.grid(row = 0,
+                          column = 1,
+                          padx = 2,
+                          pady = 5
+                          )
+
+  orders_plot_type = tk.StringVar()
+  orders_plot_type_button = tk.Button(order_models_view,
+                                 textvariable = plot_type,
+                                 command = toggle_plot_type
+                                 )
+  orders_plot_type_button.grid(row = 5,
+                        column = 0,
+                        sticky = "nsew"
+                        )
+  orders_plot_type.set("📈 3D Graph type: Scatter")
+
+  orders_date_frame = tk.Frame(order_models_view)
+  orders_date_frame.grid(row = 6,
+                  column = 0,
+                  pady = 5,
+                  sticky = "nsew",
+                  )
+
+  orders_day_month_year_label = tk.Label(orders_date_frame, text = " Date | Month | Year ", relief = "groove") # DEBUG CC change text later
+  orders_day_month_year_label.grid(row = 0,
+                            columnspan = 3,
+                            pady = 2,
+                            sticky = "nsew"
+                            )
+
+  orders_day_label = tk.Label(orders_date_frame,
+                       text = str(current_date)[8:],
+                       relief = "raised",
+                       width = 8
+                       )
+  orders_day_label.grid(row = 1,
+                 column = 0,
+                 padx = 1,
+                 sticky = "nsew"
+                 )
+
+  orders_month_label = tk.Label(orders_date_frame,
+                         text = str(current_date)[5:7],
+                         relief = "raised",
+                         width = 8
+                         )
+  orders_month_label.grid(row = 1,
+                  column = 1,
+                  padx = 4,
+                  sticky = "nsew"
+                  )
+
+  orders_year_label = tk.Label(orders_date_frame,
+                        text = str(current_date)[0:4],
+                        relief = "raised",
+                        width = 8
+                        )
+  orders_year_label.grid(row = 1,
+                  column = 2,
+                  padx = 1,
+                  sticky = "nsew"
+                  )
+
+  # orders column 2
+  orders_response_message = tk.StringVar()
+  orders_inventory_response_message_board = Label(order_models_view, textvariable = orders_response_message, bootstyle = "inverse-dark") # CC standardardise relief
+  orders_inventory_response_message_board.grid(row = 0,
+                                        column = 1,
+                                        padx = 3,
+                                        pady = 2,
+                                        rowspan = 2,
+                                        sticky = "nsew"
+                                        )
+  orders_response_message.set("       Action status will be displayed here:       \n\n")
+
+  orders_full_inventory_database_viewer_button = Button(order_models_view,
+                                                 text = "View full orders database",
+                                                 command = orders_tabularise_full_database,
+                                                 bootstyle = "success"
+                                                 )
+  orders_full_inventory_database_viewer_button.grid(row = 2,
+                                             column = 1,
+                                             padx = 3,
+                                             pady = 2,
+                                             sticky = "nsew"
+                                             ) # CC standardise pady in inventory models view
+
+  orderwise_statistics_frame = tk.Frame(order_models_view)
+  orderwise_statistics_frame.grid(row = 3,
+                                 column = 1
+                                 )
+
+  orders_left_spacer = tk.Label(orderwise_statistics_frame, text = "     ", relief = "groove")
+  orders_left_spacer.grid(row = 0,
+                   column = 0,
+                   padx = 2
+                   )
+
+  orderwise_statistics_label = tk.Label(orderwise_statistics_frame,
+                                       text = "▪▣▓ Orderwise Statistics ▓▣▪",
+                                       relief = "groove"
+                                       )
+  orderwise_statistics_label.grid(row = 0,
+                                 column = 1
+                                 )
+
+  orders_right_spacer = tk.Label(orderwise_statistics_frame, text = "     ", relief = "groove")
+  orders_right_spacer.grid(row = 0,
+                   column = 2,
+                   padx = 2
+                   )
+
+  orders_previous_item_button = Button(orderwise_statistics_frame,
+                              text = "<",
+                              command = select_previous_order,
+                              bootstyle = "success"
+                              )
+  orders_previous_item_button.grid(row = 1,
+                            column = 0,
+                            padx = 2
+                            )
+
+  selected_order_id = tk.StringVar() # CC make sure there is no wrong name like orders_item_ etc 
+  selected_order_label = tk.Label(orderwise_statistics_frame,
+                                 textvariable = selected_order_id,
+                                 relief = "groove"
+                                 )
+  selected_order_id.set("Order id: 0") # CC use meaningful defaults/ use unspecified
+  selected_order_label.grid(row = 1,
+                          column = 1,
+                          sticky = "nsew"
+                          )
+
+  orders_next_item_button = Button(orderwise_statistics_frame,
+                              text = ">",
+                              command = select_next_order,
+                              bootstyle = "success"
+                              )
+  orders_next_item_button.grid(row = 1,
+                        column = 2,
+                        padx = 2
+                        )
+  
+  selected_order_name = tk.StringVar()
+  selected_order_name_label = tk.Label(order_models_view,
+                                 textvariable = selected_order_name,
+                                 relief = "groove"
+                                 )
+  set_selected_order_name()
+  selected_order_name_label.grid(row = 4,
+                                column = 1,
+                                pady = 5,
+                                padx = 2,
+                                sticky = "nsew"
+                                )  
+
+  customer_spend_value = tk.StringVar()
+  customer_spend_label = Label(order_models_view,
+                                         textvariable = customer_spend_value,
+                                         bootstyle = "inverse-dark")
+  set_customer_spend_value()
+  customer_spend_label.grid(row = 5,
+                                      column = 1,
+                                      pady = 1,
+                                      padx = 3,
+                                      sticky = "nsew"
+                                      ) 
+  
+  order_customer_number = tk.StringVar()
+  order_customer_number_label = Label(order_models_view,
+                                         textvariable = order_customer_number,
+                                         bootstyle = "inverse-dark")
+  set_order_customer_number()
+  order_customer_number_label.grid(row = 6,
+                                      column = 1,
+                                      pady = 7,
+                                      padx = 3,
+                                      sticky = "nsew"
+                                      ) 
+
+  # CC rename all frames in orders view
+  # orders column 3
+  inventory_low_stocks_label = tk.Label(order_models_view, text = " ▣ Highest Spenders ▣ ", relief = "ridge")
+  inventory_low_stocks_label.grid(row = 0,
+                                  column = 2,
+                                  sticky = "nsew"
+                                  )  
+  populate_orders_highest_spends_data()
+  
   inventory_models_view.tkraise()
 
   # Sets initial frame to be home_view
