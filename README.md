@@ -13,9 +13,9 @@ An easy-to-use inventory visualisation software with a stylish dashboard for cri
   
 * MySQL database integration
 
-* **(WIP)** Visualisation of trends using powerful optimised algorithms
+* Visualisation of trends using 3D and 2D plotter
 
-* **(WIP)** Compute basic analytics (e.g., most sold items, restock alerts)
+* Compute basic analytics (e.g., most sold items, restock alerts)
   
 
 ## Libraries Used
