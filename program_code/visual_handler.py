@@ -865,7 +865,7 @@ def run_GUI():
       if stock == 0:
           basic_inventory_turnover_value.set("Basic inventory Turnover: 0.0")
       else:
-        basic_inventory_turnover_value.set("Basic inventory Turnover: " + str((cost * (100 - margin)) / stock))
+        basic_inventory_turnover_value.set("Basic inventory Turnover: " + str(round(((cost * (100 - margin)) / stock),6)))
 
   def set_reorder_warning():
       selected_item_values = get_selected_item_values()
