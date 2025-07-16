@@ -23,8 +23,8 @@ def enter_mysql():
                 conn_obj = conn.connect(host = user_host, port = user_port, user = user_name, passwd = user_password)
 
             correct_credentials = True
-        except:
-            exit_program = input("There was a mistake with the username, password or port; Please any key to try again (or 'q' to quit) \n")
+        except Exception as e:
+            exit_program = input("There was a mistake with the username, password or port: " + str(e) + "\nPlease any key to try again (or 'q' to quit) \n")
             if exit_program == "q":
                 sys.exit(1) # exits program
 

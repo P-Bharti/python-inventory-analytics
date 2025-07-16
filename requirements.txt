@@ -1,4 +1,4 @@
 matplotlib==3.10.3
-mysql_connector_python==9.3.0
+mysql_connector_python==8.4.0
 numpy==2.2.6
 ttkbootstrap==1.12.2
