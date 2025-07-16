@@ -337,7 +337,7 @@ def run_GUI():
       messages[1] = messages[3]
       messages[3] =  new_message
       new_text = " ▪ ".join(messages)
-    
+
     inventory_response_message.set(new_text)
 
   def set_orders_response_message(new_message):
@@ -355,7 +355,7 @@ def run_GUI():
       messages[1] = messages[3]
       messages[3] =  new_message
       new_text = " ▪ ".join(messages)
-    
+
     orders_response_message.set(new_text)
 
   def close_plot():
@@ -374,7 +374,7 @@ def run_GUI():
     else:
       x_axis = orders_x_axis_column_name.get()
       y_axis = orders_y_axis_column_name.get()
-      z_axis = orders_z_axis_column_name.get()      
+      z_axis = orders_z_axis_column_name.get()
 
     # CC add error msgs everywhere in code
     # without z-axis
@@ -439,7 +439,7 @@ def run_GUI():
       if plot_type.get()[17:] == "Line":
         set_orders_response_message("x-y-z Line Graph drawn")
         ax.plot3D(x_plot_data, y_plot_data, z_plot_data)
-        
+
       # replacing the pseudo-numbers (for string data) in the above statement by actual data if present (required to avoid datatype issues)
       if x_axis_type_string == True:
         ax.set(xticks=range(len(x_axis_list)), xticklabels=x_axis_list)
@@ -831,19 +831,15 @@ def run_GUI():
                    pady = 5
                    )
 
-  # padx = (10,0) pads only on left side
   inventory_models_view = tk.Frame(modelling_view)
   inventory_models_view.grid(row = 1,
                              columnspan = 2,
-                             padx = (10,0),
                              sticky = "nsew"
                              )
 
-  # padx = (10,0) pads only on left side
   order_models_view = tk.Frame(modelling_view)
   order_models_view.grid(row = 1,
                          columnspan = 2,
-                         padx = (10,0),
                          sticky = "nsew"
                          )
 
@@ -887,7 +883,7 @@ def run_GUI():
                                            rowspan = 6,
                                            sticky = "e"
                                            )
-    
+
     inventory_low_stocks_data = database_handler.retrieve_via_sql_query("item_name,item_stock,item_restock_value","inventory")
     inventory_low_stocks_viewer = Treeview(inventory_low_stocks_viewer_frame,
                                            columns = ("item_name","item_stock_restock_value_difference"),
@@ -898,14 +894,14 @@ def run_GUI():
     inventory_low_stocks_viewer.grid(row = 1,
                                      column = 1
                                      )
-    
+
     reformatted_data = []
     temp_inventory_low_stocks_data = inventory_low_stocks_data
     difference_list = []
     for i in inventory_low_stocks_data:
       # inventory_low_stocks_data in format [(item_name,item_stock,item_restock_value)...so on]
-      difference_list.append(i[1]-i[2]) # append the difference between stock and restock value  
-    
+      difference_list.append(i[1]-i[2]) # append the difference between stock and restock value
+
     while len(difference_list) != 0:
       minimum_difference  = min(difference_list)
       minimum_difference_index = difference_list.index(minimum_difference)
@@ -1148,7 +1144,7 @@ def run_GUI():
                         column = 2,
                         padx = 2
                         )
-  
+
   selected_item_name = tk.StringVar()
   selected_item_name_label = tk.Label(inventory_models_view,
                                  textvariable = selected_item_name,
@@ -1160,8 +1156,8 @@ def run_GUI():
                                 pady = 5,
                                 padx = 2,
                                 sticky = "nsew"
-                                )  
-  
+                                )
+
   basic_inventory_turnover_value = tk.StringVar()
   basic_inventory_turnover_label = Label(inventory_models_view,
                                          textvariable = basic_inventory_turnover_value,
@@ -1172,8 +1168,8 @@ def run_GUI():
                                       pady = 1,
                                       padx = 3,
                                       sticky = "nsew"
-                                      ) 
-  
+                                      )
+
   reorder_warning_value = tk.StringVar()
   reorder_warning_label = Label(inventory_models_view,
                                          textvariable = reorder_warning_value,
@@ -1184,14 +1180,14 @@ def run_GUI():
                                       pady = 7,
                                       padx = 3,
                                       sticky = "nsew"
-                                      ) 
+                                      )
 
   # inventory column 3
   inventory_low_stocks_label = tk.Label(inventory_models_view, text = "▣ Stocks Till Restock ▣", relief = "ridge")
   inventory_low_stocks_label.grid(row = 0,
                                   column = 2,
                                   sticky = "nsewe"
-                                  )  
+                                  )
   populate_inventory_low_stocks_data()
 
 
@@ -1207,7 +1203,7 @@ def run_GUI():
 
   def orders_draw_plot():
     draw_plot(use_orders_table = True)
- 
+
   def orders_tabularise_full_database():
     tabularise_full_inventory_database(use_orders_table = True)
 
@@ -1288,7 +1284,7 @@ def run_GUI():
                                            rowspan = 6,
                                            sticky = "e"
                                            )
-    
+
     orders_highest_spends_data = database_handler.retrieve_via_sql_query("order_customer_name,sum(order_final_cost*order_quantity) as total_spend","orders",sql_group_by = "order_customer_name")
     orders_highest_spends_viewer = Treeview(orders_highest_spends_viewer_frame,
                                            columns = ("order_customer_name","total_spend"),
@@ -1299,14 +1295,14 @@ def run_GUI():
     orders_highest_spends_viewer.grid(row = 1,
                                      column = 1
                                      )
-    
+
     orders_reformatted_data = []
     temp_orders_highest_spends_data = orders_highest_spends_data
     total_spends_list = []
     for i in orders_highest_spends_data:
       # orders_highest_spends_data in format [(order_customer_name,total_spend)...so on]
       total_spends_list.append(i[1]) # append the total spend
-    
+
     while len(total_spends_list) != 0:
       maximum_spend_index = total_spends_list.index(max(total_spends_list))
 
@@ -1527,7 +1523,7 @@ def run_GUI():
                             padx = 2
                             )
 
-  selected_order_id = tk.StringVar() # CC make sure there is no wrong name like orders_item_ etc 
+  selected_order_id = tk.StringVar() # CC make sure there is no wrong name like orders_item_ etc
   selected_order_label = tk.Label(orderwise_statistics_frame,
                                  textvariable = selected_order_id,
                                  relief = "groove"
@@ -1547,7 +1543,7 @@ def run_GUI():
                         column = 2,
                         padx = 2
                         )
-  
+
   selected_order_name = tk.StringVar()
   selected_order_name_label = tk.Label(order_models_view,
                                  textvariable = selected_order_name,
@@ -1559,7 +1555,7 @@ def run_GUI():
                                 pady = 5,
                                 padx = 2,
                                 sticky = "nsew"
-                                )  
+                                )
 
   customer_spend_value = tk.StringVar()
   customer_spend_label = Label(order_models_view,
@@ -1571,8 +1567,8 @@ def run_GUI():
                                       pady = 1,
                                       padx = 3,
                                       sticky = "nsew"
-                                      ) 
-  
+                                      )
+
   order_customer_number = tk.StringVar()
   order_customer_number_label = Label(order_models_view,
                                          textvariable = order_customer_number,
@@ -1583,7 +1579,7 @@ def run_GUI():
                                       pady = 7,
                                       padx = 3,
                                       sticky = "nsew"
-                                      ) 
+                                      )
 
   # CC rename all frames in orders view
   # orders column 3
@@ -1591,9 +1587,9 @@ def run_GUI():
   inventory_low_stocks_label.grid(row = 0,
                                   column = 2,
                                   sticky = "nsew"
-                                  )  
+                                  )
   populate_orders_highest_spends_data()
-  
+
   inventory_models_view.tkraise()
 
   # Sets initial frame to be home_view
