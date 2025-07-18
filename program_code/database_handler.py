@@ -34,7 +34,7 @@ def enter_mysql():
 
     cursor = conn_obj.cursor()
     setup.initialise_tables(cursor)
-    cursor.close() # CC Remember to close the connection later as well
+    cursor.close()
 
 def import_items(values):
 
