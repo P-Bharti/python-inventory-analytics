@@ -15,7 +15,7 @@ An easy-to-use inventory visualisation software with a stylish dashboard for cri
 
 * Visualisation of trends using 3D and 2D plotter
 
-* Compute basic analytics (e.g., most sold items, restock alerts)
+* Compute basic analytics (e.g, most sold items, restock alerts)
   
 
 ## Libraries Used
