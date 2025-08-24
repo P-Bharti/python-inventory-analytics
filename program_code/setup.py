@@ -24,7 +24,7 @@ def initialise_tables(cursor):
                       item_manufacturer_contact_no varchar(10) not null,
                       PRIMARY KEY (item_id)
                   );""")
-
+  # Default data below
   cursor.execute("""INSERT INTO inventory (item_name,item_cost,item_gst,item_discount,item_final_cost,item_margin,item_stock,item_restock_value,item_manufacturer_name,item_manufacturer_incharge,item_manufacturer_contact_no)
                  VALUES
                  ("Apples",139.00,10.00,5.00,122.55,50.00,500,50,"APPLE","Tim Cook","0999666333"),
@@ -53,6 +53,7 @@ def initialise_tables(cursor):
                       PRIMARY KEY (order_id)
                   );""")
 
+  # Default data below
   cursor.execute("""INSERT INTO orders (order_item_name,order_date,order_initial_cost,order_gst,order_discount,order_final_cost,order_quantity,order_customer_name,order_customer_contact_no)
                  VALUES
                  ("Apples","2025-04-08",139.00,10.00,5.00,122.55,1,"Tom Bakes","1999666333"),
