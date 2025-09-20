@@ -105,7 +105,7 @@ python3 main.py
 
 ## Project Status
 
-This project is currently a Work in Progress. 
+This project is currently COMPLETE. 
 
 
 ## Contributions
