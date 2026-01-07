@@ -109,13 +109,9 @@ This project is currently COMPLETE.
 
 
 ## Contributions
-
-Applicaions for new Contributors are closed as of this time.
-##
-Current Contributors:
+Authors of the code:
 - Pranav Bharti
 - Mantra Asthana
-##
 
 ## License
 
