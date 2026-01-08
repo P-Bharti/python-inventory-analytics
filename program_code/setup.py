@@ -2,7 +2,7 @@
 # Only run once on initialisation
 
 def initialise_tables(cursor):
-  # Working under databases called main_database and plot_database
+  # Working under databases called main_database
   cursor.execute("CREATE DATABASE IF NOT EXISTS main_database")
 
   cursor.execute("USE main_database")
