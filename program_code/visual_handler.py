@@ -16,6 +16,7 @@ def run_GUI():
   root.title("Python Inventory Analytics")
   root.geometry("660x365")
   root.protocol('WM_DELETE_WINDOW', sys.exit)
+  root.resizable(False, False)
 
 
   home_view = tk.Frame(root)
@@ -167,6 +168,7 @@ def run_GUI():
 
   def switch_to_modelling_view():
     modelling_view.tkraise()
+
   # home view GUI
   database_label = tk.Label(home_view,text = "▭▭▪▣▓ ▒ ░ Database Viewer ░ ▒ ▓▣▪▭▭", relief = "ridge", font = "TkFixedFont")
   database_label.grid(row = 0,
@@ -824,7 +826,6 @@ def run_GUI():
     set_customer_spend_value()
     set_order_customer_number()
 
-
   # modelling view GUI
   title_row = tk.Frame(modelling_view)
   title_row.columnconfigure(0, weight = 1) # centering
@@ -909,8 +910,9 @@ def run_GUI():
       current_column_index = int(selected_item_id.get()[8:])
 
       stock = selected_item_values[current_column_index][2]
+      re_order_stock = selected_item_values[current_column_index][3]
 
-      if stock < 100:
+      if stock < re_order_stock:
           reorder_warning_value.set("Reorder point reached: True")
       else:
         reorder_warning_value.set("Reorder point reached: False")
