@@ -738,7 +738,7 @@ def run_GUI():
     table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
 
     # finding current index
-    current_column_index = int(selected_item_id.get()[8:])
+    current_column_index = int(selected_item_id.get()[8:]) - 1 # minus 1 to begin indexing at 0
 
     # setting to name at the id
     set_inventory_response_message("Item set to: " + table_information[current_column_index][1] )
@@ -749,7 +749,7 @@ def run_GUI():
     table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
 
     # finding current index
-    current_column_index = int(selected_item_id.get()[8:])
+    current_column_index = int(selected_item_id.get()[8:]) - 1 # minus 1 to begin indexing at 0
 
     #in case at the first column
     if current_column_index == 0:
@@ -757,7 +757,7 @@ def run_GUI():
     else:
       current_column_index = current_column_index - 1
 
-    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]-1))
+    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]))
     set_selected_item_name()
     set_basic_inventory_turnover()
     set_reorder_warning()
@@ -767,7 +767,7 @@ def run_GUI():
     table_information = database_handler.retrieve_via_sql_query("item_id,item_name","inventory")
 
     # finding current index
-    current_column_index = int(selected_item_id.get()[8:])
+    current_column_index = int(selected_item_id.get()[8:]) - 1 # minus 1 to begin indexing at 0
 
     # in case at the last column
     if current_column_index + 1 == len(table_information):
@@ -775,7 +775,7 @@ def run_GUI():
     else:
       current_column_index = current_column_index + 1
 
-    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]-1))
+    selected_item_id.set("Item id: " + str(table_information[current_column_index][0]))
     set_selected_item_name()
     set_basic_inventory_turnover()
     set_reorder_warning()
@@ -785,17 +785,17 @@ def run_GUI():
     table_information = database_handler.retrieve_via_sql_query("order_id,order_customer_name","orders")
 
     # finding current index
-    current_column_index = int(selected_order_id.get()[10:])
+    current_column_index = int(selected_order_id.get()[10:]) - 1 # minus 1 to begin indexing at 0
 
     # setting to name at the id
-    set_orders_response_message("Order id set to: " + str(table_information[current_column_index][0]-1))
+    set_orders_response_message("Order id set to: " + str(table_information[current_column_index][0]))
     selected_order_name.set("Customer name: " + table_information[current_column_index][1])
 
   def select_previous_order():
     # retriving the name list
     table_information = database_handler.retrieve_via_sql_query("order_id,order_customer_name","orders")
     # finding current index
-    current_column_index = int(selected_order_id.get()[10:])
+    current_column_index = int(selected_order_id.get()[10:]) - 1 # minus 1 to begin indexing at 0
 
     #in case at the first column
     if current_column_index == 0:
@@ -803,7 +803,7 @@ def run_GUI():
     else:
       current_column_index = current_column_index - 1
 
-    selected_order_id.set("Order id: " + str(table_information[current_column_index][0]-1))
+    selected_order_id.set("Order id: " + str(table_information[current_column_index][0]))
     set_selected_order_name()
     set_customer_spend_value()
     set_order_customer_number()
@@ -813,7 +813,7 @@ def run_GUI():
     table_information = database_handler.retrieve_via_sql_query("order_id","orders")
 
     # finding current index
-    current_column_index = int(selected_order_id.get()[10:])
+    current_column_index = int(selected_order_id.get()[10:]) - 1 # minus 1 to begin indexing at 0
 
     # in case at the last column
     if current_column_index + 1 == len(table_information):
@@ -821,7 +821,7 @@ def run_GUI():
     else:
       current_column_index = current_column_index + 1
 
-    selected_order_id.set("Order id: " + str(table_information[current_column_index][0]-1))
+    selected_order_id.set("Order id: " + str(table_information[current_column_index][0]))
     set_selected_order_name()
     set_customer_spend_value()
     set_order_customer_number()
@@ -892,7 +892,7 @@ def run_GUI():
       selected_item_values = get_selected_item_values()
       # ^ in format  [(item_name,item_cost,item_margin,item_stock), so on...]
 
-      current_column_index = int(selected_item_id.get()[8:])
+      current_column_index = int(selected_item_id.get()[8:]) - 1 # minus 1 to begin indexing at 0
 
       cost = selected_item_values[current_column_index][0]
       margin = selected_item_values[current_column_index][1]
@@ -907,7 +907,7 @@ def run_GUI():
       selected_item_values = get_selected_item_values()
       # ^ in format  [(item_name,item_cost,item_margin,item_stock), so on...]
 
-      current_column_index = int(selected_item_id.get()[8:])
+      current_column_index = int(selected_item_id.get()[8:]) - 1 # minus 1 to begin indexing at 0
 
       stock = selected_item_values[current_column_index][2]
       re_order_stock = selected_item_values[current_column_index][3]
@@ -1170,7 +1170,7 @@ def run_GUI():
                                  textvariable = selected_item_id,
                                  relief = "groove"
                                  )
-  selected_item_id.set("Item id: 0")
+  selected_item_id.set("Item id: 1")
   selected_item_label.grid(row = 1,
                           column = 1,
                           sticky = "nsew"
@@ -1250,7 +1250,7 @@ def run_GUI():
   # specific functions for orders view
   def set_customer_spend_value():
 
-    current_order_id = int(selected_order_id.get()[9:]) + 1
+    current_order_id = int(selected_order_id.get()[9:])
     where_clause = "order_id =" + str(current_order_id)
 
     retrieved_data = database_handler.retrieve_via_sql_query("order_id,order_final_cost,order_quantity","orders",where_clause)
@@ -1259,7 +1259,7 @@ def run_GUI():
     customer_spend_value.set("Total amt: " + str(retrieved_data[0][1]*retrieved_data[0][2]))
 
   def set_order_customer_number():
-    current_order_id = int(selected_order_id.get()[9:]) + 1
+    current_order_id = int(selected_order_id.get()[9:])
     where_clause = "order_id =" + str(current_order_id)
 
     retrieved_data = database_handler.retrieve_via_sql_query("order_id,order_customer_contact_no","orders",where_clause)
@@ -1521,7 +1521,7 @@ def run_GUI():
                                  textvariable = selected_order_id,
                                  relief = "groove"
                                  )
-  selected_order_id.set("Order id: 0")
+  selected_order_id.set("Order id: 1")
   selected_order_label.grid(row = 1,
                           column = 1,
                           sticky = "nsew"
