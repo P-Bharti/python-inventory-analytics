@@ -40,6 +40,9 @@ pip3 install ttkbootstrap
 pip3 install mysql-connector-python
 ```
 
+## Documentation
+See [Documentation](Technical_Documentation.pdf)
+
 ## Getting Started
 1. [Clone the Repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 
